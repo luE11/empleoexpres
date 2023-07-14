@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    url: ${DB_URL}
+  jpa:
+    show-sql: true
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
+  config:
+    import: optional:file:.env[.properties]
