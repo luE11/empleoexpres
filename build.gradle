@@ -22,6 +22,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+	implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
 	runtimeOnly 'mysql:mysql-connector-java:8.0.32'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
@@ -41,10 +42,6 @@ dependencies {
             <artifactId>jquery</artifactId>
             <version>1.9.1</version>
         </dependency>
-        <dependency>
-		    <groupId>jakarta.validation</groupId>
-		    <artifactId>jakarta.validation-api</artifactId>
-		</dependency>
 	* */
 }
 
