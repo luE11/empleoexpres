@@ -5,6 +5,9 @@ spring:
     url: ${DB_URL}
   jpa:
     show-sql: true
+    hibernate:
+      ddl-auto: create
+    database: mysql
   data:
     web:
       pageable:
