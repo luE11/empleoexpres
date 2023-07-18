@@ -17,8 +17,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, proxyTargetClass = true)
 public class WebSecurityConfig {
-    //@Autowired
-    //private UserDetailsService userDetailsService;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     @Bean
     BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -31,7 +31,7 @@ public class WebSecurityConfig {
             .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
                 authorizationManagerRequestMatcherRegistry.requestMatchers("/webjars/**", "/js/**",
                                 "/css/**", "/images/**", "/register", "/", "/about/",
-                                "/search/**").permitAll()
+                                "/search/**", "/login", "/register").permitAll()
                     .anyRequest().authenticated();
             })
             .formLogin(login -> login
@@ -49,6 +49,6 @@ public class WebSecurityConfig {
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        //auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
+        auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
     }
 }

@@ -5,8 +5,9 @@ spring:
     url: ${DB_URL}
   jpa:
     show-sql: true
+    defer-datasource-initialization: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     database: mysql
   data:
     web:
@@ -14,3 +15,10 @@ spring:
         one-indexed-parameters: true
   config:
     import: optional:file:.env[.properties]
+  sql:
+    init:
+      # mode: ALWAYS
+      mode: NEVER
+  devtools:
+    restart:
+      enabled: true
