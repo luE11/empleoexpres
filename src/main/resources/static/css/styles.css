@@ -1,3 +1,11 @@
 h1.index-title {
     font-size: 4rem;
 }
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+img.card-image {
+    height: 20vw;
+}

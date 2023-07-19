@@ -3,7 +3,6 @@ package pra.lue11.empleoexpres.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,8 +16,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, proxyTargetClass = true)
 public class WebSecurityConfig {
-    //@Autowired
-    //private UserDetailsService userDetailsService;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     @Bean
     BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -31,7 +30,7 @@ public class WebSecurityConfig {
             .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
                 authorizationManagerRequestMatcherRegistry.requestMatchers("/webjars/**", "/js/**",
                                 "/css/**", "/images/**", "/register", "/", "/about/",
-                                "/search/**").permitAll()
+                                "/search/**", "/login", "/signin").permitAll()
                     .anyRequest().authenticated();
             })
             .formLogin(login -> login
@@ -42,13 +41,13 @@ public class WebSecurityConfig {
                     .permitAll()
             )
             .logout(LogoutConfigurer::permitAll)
-            .rememberMe(Customizer.withDefaults());
+            .rememberMe();
 
         return http.build();
     }
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        //auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
+        auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
     }
 }

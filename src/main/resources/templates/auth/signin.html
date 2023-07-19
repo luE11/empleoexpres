@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign in with your account</title>
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}" />
+    <link th:rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary mt-2">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <img src="/images/logoempexp.png" alt="EmpleoExprés Logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="d-flex" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="/about">Acerca de</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search">Empleos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/support">Soporte</a>
+                    </li>
+                    <li class="nav-item mx-2">
+                        <a class="btn btn-primary" href="/login">Iniciar sesión</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div th:if="${userRole.isEmpty()}" class="container-fluid px-5 pt-3">
+        <h2 class="text-center mb-3">Registro</h2>
+        <div class="d-flex justify-content-center">
+            <div class="card cursor-pointer shadow-lg me-5" style="width: 18rem;" th:onclick="|window.location.href='/signin?role=candidate'|">
+                <img th:src="@{/images/candidate_photo.jpg}" class="card-img-top card-image" alt="Candidate image">
+                <div class="card-body">
+                    <h5 class="card-title">Registrarse como candidato</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Elije esta opción si quieres registrarte para buscar empleo en esta plataforma.</p>
+                </div>
+            </div>
+            <div class="card cursor-pointer shadow-lg" style="width: 18rem;" th:onclick="|window.location.href='/signin?role=company'|">
+                <img th:src="@{/images/company_photo.jpg}" class="card-img-top card-image" alt="Company image">
+                <div class="card-body">
+                    <h5 class="card-title">Registrarse como empresa</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Elije esta opción si quieres registrarte para registrar ofertas de empleo y reclutar candidatos registrados.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:unless="${userRole.isEmpty()}" class="container-fluid text-bg-info p-5">
+        <div class="card text-bg-light col-md-6 my-5 offset-md-3 p-5">
+            <div class="card-body">
+                <div class="form-check text-start">
+                    <input name="remember-me" class="form-check-input" type="checkbox" value="" id="rememberme-check">
+                    <label class="form-check-label" for="rememberme-check">Recuérdame</label>
+                </div>
+                <form method="POST" th:action="@{/signin}" th:object="${user}" class="my-form">
+                    <h2 class="text-center mb-3">Registrarse</h2>
+                    <!-- $ variables @ links -->
+                    <div class="text-center">
+                        <div th:class="'form-group'+${error != null ? ' '+'has-error' : ''}">
+                            <span class="text-primary" th:text="${message}" th:if="${message!=null}"></span>
+                            <input name="email" type="text" class="form-control mb-3" placeholder="Email" autofocus="true" />
+
+                            <div th:if="${userRole.get().compareTo('candidate')}" th:replace="fragments/signin.html :: candidate"></div>
+
+                            <div th:if="${userRole.get().compareTo('company')}" th:replace="fragments/signin.html :: company"></div>
+                            
+                            <input name="password" type="password" class="form-control mb-3" placeholder="Password" />
+                            <span class="text-danger d-block mb-3" th:text="${error}" th:if="${error!=null}"></span>
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        </div>
+                        <button class="btn btn-lg btn-primary" type="submit">Registrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.min.js}"></script>
+</body>
+</html>
