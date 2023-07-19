@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pra.lue11.empleoexpres.model.User;
-import pra.lue11.empleoexpres.service.AuthService;
+import pra.lue11.empleoexpres.service.UserService;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,12 +18,12 @@ import java.util.Set;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
-    private AuthService authService;
+    private UserService userService;
 
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = authService.findUserByEmail(username)
+        User user = userService.findUserByEmail(username)
         		.orElseThrow(() -> new UsernameNotFoundException("User with email: "+ username + "was not found"));
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
             grantedAuthorities.add(new SimpleGrantedAuthority(user.getRole().getRoleName()));

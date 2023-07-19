@@ -30,7 +30,7 @@ public class WebSecurityConfig {
             .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
                 authorizationManagerRequestMatcherRegistry.requestMatchers("/webjars/**", "/js/**",
                                 "/css/**", "/images/**", "/register", "/", "/about/",
-                                "/search/**", "/login", "/register").permitAll()
+                                "/search/**", "/login", "/signin").permitAll()
                     .anyRequest().authenticated();
             })
             .formLogin(login -> login

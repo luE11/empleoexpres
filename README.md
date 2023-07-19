@@ -5,6 +5,7 @@ Aplicación desarrollada con Spring boot y Thymeleaf, que busca ofrecer funciona
 - Uso y personalización del módulo de seguridad de Springboot mvc
 - Generación de reportes con Jasper
 - Uso de Thymeleaf para el desarrollo de interfaces gráficas
+- Reutilización de componentes HTML con Thymeleaf Fragments
 - Creación de directiva personalizada para validación de atributos de una entidad
 - Manejo de excepciones
 - Sistema basado en roles para limitar el acceso a los servicios a los distintos tipos de usuarios
