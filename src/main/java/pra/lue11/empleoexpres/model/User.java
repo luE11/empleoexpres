@@ -36,6 +36,12 @@ public class User {
     @JsonIgnore
     protected Person person;
 
+    public User(String email, String password, UserRole role) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
     @Override
     public String toString() {
         return "User{" +
