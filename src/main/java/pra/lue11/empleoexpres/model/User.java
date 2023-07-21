@@ -35,6 +35,9 @@ public class User {
     @OneToOne(mappedBy = "user")
     @JsonIgnore
     protected Person person;
+    @OneToOne(mappedBy = "user")
+    @JsonIgnore
+    protected Company company;
 
     public User(String email, String password, UserRole role) {
         this.email = email;

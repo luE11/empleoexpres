@@ -43,7 +43,7 @@ public class Person {
     protected String photoUrl;
     @Column(length = 45)
     protected String address;
-    @Column(length = 200)
+    @Column(length = 200, nullable = false)
     protected String cv1Url;
     @Column(length = 200)
     protected String cv2Url;
