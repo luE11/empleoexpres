@@ -60,10 +60,13 @@ public class Person {
     @JoinColumn(name = "place_id", referencedColumnName = "place_id", nullable = false)
     protected Place place;
 
-    public Person(String firstName, String lastName, Date birthDate, JobModality preferredModality) {
+    public Person(String firstName, String lastName, Date birthDate, String phoneNumber, String description, JobModality preferredModality, String address) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
+        this.phoneNumber = phoneNumber;
+        this.description = description;
         this.preferredModality = preferredModality;
+        this.address = address;
     }
 }

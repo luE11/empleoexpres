@@ -65,7 +65,8 @@ public class CandidateDTO {
     }
 
     public Person generatePerson(){
-        return new Person(firstName, lastName, birthDate, JobModality.valueOf(preferredModality));
+        return new Person(firstName, lastName, birthDate, phoneNumber,
+                description, JobModality.valueOf(preferredModality), address);
     }
 
 }
