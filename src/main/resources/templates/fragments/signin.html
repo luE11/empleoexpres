@@ -9,72 +9,87 @@
 </head>
 
 <body>
+    <!-- CANDIDATE SIGNIN FORM FIELDS -->
     <div th:fragment="candidate">
-        <input name="email" type="text" class="form-control mb-3" placeholder="Email" autofocus="true" />
-
-        <div class="col-md-4">
-            <label for="validationCustom01" class="form-label">First name</label>
-            <input type="text" class="form-control" id="validationCustom01" value="Mark" required>
-            <div class="valid-feedback">
-                Looks good!
+        <div class="row g-3 my-2">
+            <div class="col-md-6">
+                <input th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid':''" class="form-control" type="text" th:field="*{firstName}" placeholder="Nombres">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
+            </div>
+            <div class="col-md-6">
+                <input th:classappend="${#fields.hasErrors('lastName')} ? 'is-invalid':''" class="form-control" type="text" th:field="*{lastName}" placeholder="Apellidos">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
             </div>
         </div>
-        <div class="col-md-4">
-            <label for="validationCustom02" class="form-label">Last name</label>
-            <input type="text" class="form-control" id="validationCustom02" value="Otto" required>
-            <div class="valid-feedback">
-                Looks good!
+        <div class="row g-3 my-2">
+            <!-- birthDate -->
+            <div class="col-md-6">
+                <input th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid':''" class="form-control" type="text" th:field="*{firstName}" placeholder="Nombres">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
+            </div>
+            <!-- Phone number -->
+            <div class="col-md-6">
+                <input th:classappend="${#fields.hasErrors('lastName')} ? 'is-invalid':''" class="form-control" type="text" th:field="*{lastName}" placeholder="Apellidos">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
             </div>
         </div>
-        <div class="col-md-4">
-            <label for="validationCustomUsername" class="form-label">Username</label>
-            <div class="input-group has-validation">
-                <span class="input-group-text" id="inputGroupPrepend">@</span>
-                <input type="text" class="form-control" id="validationCustomUsername"
-                    aria-describedby="inputGroupPrepend" required>
-                <div class="invalid-feedback">
-                    Please choose a username.
+        <!-- Description -->
+        <!-- PreferredModality -->
+        <!-- Photo -->
+        <!-- Address -->
+        <!-- Cv1 -->
+        <!-- Cv2 -->
+        <!-- Cv3 -->
+        <!-- placeId -->
+    </div>
+    <!-- PUBLISHER SIGNIN FORM FIELDS -->
+    <div th:fragment="publisher">
+        <div class="row g-3 my-2">
+            <div class="col-md-4">
+                <input th:classappend="${#fields.hasErrors('name')} ? 'is-invalid':''" class="form-control" type="text" th:field="*{name}" placeholder="Nombre de empresa">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+            </div>
+            <div class="col-md-8">
+                <div class="input-group h-fit-content">
+                    <label class="input-group-text" for="logo">Logo</label>
+                    <input th:classappend="${#fields.hasErrors('logo')} ? 'is-invalid':''" class="form-control" type="file" th:field="*{logo}" placeholder="Logo" id="logo">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('logo')}" th:errors="*{logo}"></div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <label for="validationCustom03" class="form-label">City</label>
-            <input type="text" class="form-control" id="validationCustom03" required>
-            <div class="invalid-feedback">
-                Please provide a valid city.
-            </div>
+        <div class="my-2">
+            <textarea th:classappend="${#fields.hasErrors('description')} ? 'is-invalid':''" class="form-control" type="text" rows="3" th:field="*{description}" id="description" placeholder="Descripción"></textarea>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
         </div>
-        <div class="col-md-3">
-            <label for="validationCustom04" class="form-label">State</label>
-            <select class="form-select" id="validationCustom04" required>
-                <option selected disabled value="">Choose...</option>
-                <option>...</option>
-            </select>
-            <div class="invalid-feedback">
-                Please select a valid state.
-            </div>
-        </div>
-        <div class="col-md-3">
-            <label for="validationCustom05" class="form-label">Zip</label>
-            <input type="text" class="form-control" id="validationCustom05" required>
-            <div class="invalid-feedback">
-                Please provide a valid zip.
-            </div>
-        </div>
-        <div class="col-12">
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
-                <label class="form-check-label" for="invalidCheck">
-                    Agree to terms and conditions
-                </label>
-                <div class="invalid-feedback">
-                    You must agree before submitting.
-                </div>
-            </div>
+        <div class="form-check my-2 d-flex">
+            <input th:classappend="${#fields.hasErrors('visible')} ? 'is-invalid':''" class="form-check-input me-3" type="checkbox" th:field="*{visible}" id="visible">
+            <label class="form-check-label" for="visible">Empresa visible</label>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('visible')}" th:errors="*{visible}"></div>
         </div>
     </div>
-    <div th:fragment="company">
-
+    <!-- SELECT USER ROLE SIGNIN COMPONENT -->
+    <div th:fragment="select-user-role" class="container-fluid px-5 pt-3">
+        <h2 class="text-center mb-3">Registro</h2>
+        <div class="d-flex justify-content-center">
+            <div class="card cursor-pointer shadow-lg me-5" style="width: 18rem;" th:onclick="|window.location.href='/signin?role=candidate'|">
+                <img th:src="@{/images/candidate_photo.jpg}" class="card-img-top card-image" alt="Candidate image">
+                <div class="card-body">
+                    <h5 class="card-title">Registrarse como candidato</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Elije esta opción si quieres registrarte para buscar empleo en esta plataforma.</p>
+                </div>
+            </div>
+            <div class="card cursor-pointer shadow-lg" style="width: 18rem;" th:onclick="|window.location.href='/signin?role=publisher'|">
+                <img th:src="@{/images/company_photo.jpg}" class="card-img-top card-image" alt="Company image">
+                <div class="card-body">
+                    <h5 class="card-title">Registrarse como empresa</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Elije esta opción si quieres registrarte para registrar ofertas de empleo y reclutar candidatos registrados.</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.min.js}"></script>

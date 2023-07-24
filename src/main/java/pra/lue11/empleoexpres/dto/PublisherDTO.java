@@ -1,6 +1,7 @@
 package pra.lue11.empleoexpres.dto;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.web.multipart.MultipartFile;
-import pra.lue11.empleoexpres.model.Company;
+import pra.lue11.empleoexpres.model.Publisher;
 import pra.lue11.empleoexpres.model.User;
 import pra.lue11.empleoexpres.model.enums.UserRole;
 import pra.lue11.empleoexpres.utils.validator.FileType;
@@ -20,19 +21,20 @@ import pra.lue11.empleoexpres.utils.validator.FileType;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CompanyDTO {
+public class PublisherDTO {
     @Email
-    @NotNull
+    @NotEmpty
     protected String email;
-    @NotNull
-    @Length(min = 8)
+    @NotEmpty
+    @Length(min = 8, max = 20)
     protected String password;
-    @NotNull
+    @NotEmpty
     protected String name;
-    @NotNull
+    @NotEmpty
+    @Length(min = 20, max = 300)
     protected String description;
-    @FileType(typesAllowed = { "jpg", "png" })
-    protected MultipartFile logo;
+    @FileType(typesAllowed = { "jpg", "png" }, message = "El logo debe ser una imagen con formato .jpg o .png")
+    protected MultipartFile logo = null;
     @NotNull
     protected boolean visible;
 
@@ -40,8 +42,8 @@ public class CompanyDTO {
         return new User(email, password, UserRole.PUBLISHER);
     }
 
-    public Company generateCompany(){
-        return new Company(name, description, visible);
+    public Publisher generateCompany(){
+        return new Publisher(name, description, visible);
     }
 
 }

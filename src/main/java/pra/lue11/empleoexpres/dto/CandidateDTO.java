@@ -1,6 +1,7 @@
 package pra.lue11.empleoexpres.dto;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import lombok.AllArgsConstructor;
@@ -27,14 +28,14 @@ import java.util.Date;
 @AllArgsConstructor
 public class CandidateDTO {
     @Email
-    @NotNull
+    @NotEmpty
     protected String email;
-    @NotNull
+    @NotEmpty
     @Length(min = 8)
     protected String password;
-    @NotNull
+    @NotEmpty
     protected String firstName;
-    @NotNull
+    @NotEmpty
     protected String lastName;
     @NotNull
     @Past(message = "Birth date can't be future")
@@ -43,7 +44,7 @@ public class CandidateDTO {
     protected String phoneNumber;
     @Length(min = 8)
     protected String description;
-    @NotNull
+    @NotEmpty
     @EnumVal(enumClass = JobModality.class)
     protected String preferredModality;
     @FileType(typesAllowed = { "jpg", "png" })

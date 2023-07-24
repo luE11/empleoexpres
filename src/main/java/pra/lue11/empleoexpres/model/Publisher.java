@@ -12,19 +12,19 @@ import lombok.Setter;
  * @author luE11 on 21/07/23
  */
 @Entity
-@Table(name = "companies")
+@Table(name = "publishers")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Company {
+public class Publisher {
     @Id
-    @Column(name = "user_id")
+    @Column(name = "publisher_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     protected Integer id;
     @Column(length = 45, nullable = false)
-    protected String name;
+    protected String companyName;
     @Column(length = 300, nullable = false)
     protected String description;
     @Column(length = 200)
@@ -36,8 +36,8 @@ public class Company {
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
     protected User user;
 
-    public Company(String name, String description, boolean visible) {
-        this.name = name;
+    public Publisher(String companyName, String description, boolean visible) {
+        this.companyName = companyName;
         this.description = description;
         this.visible = visible;
     }
