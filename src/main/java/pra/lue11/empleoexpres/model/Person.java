@@ -8,8 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pra.lue11.empleoexpres.model.enums.JobModality;
-
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * @author luE11 on 18/07/23
@@ -31,7 +30,7 @@ public class Person {
     @Column(name = "last_name", nullable = false, length = 45)
     protected String lastName;
     @Column(name = "birth_date", nullable = false)
-    protected Date birthDate;
+    protected LocalDate birthDate;
     @Column(name = "phone_number", length = 20)
     protected String phoneNumber;
     @Column(length = 500)
@@ -43,7 +42,7 @@ public class Person {
     protected String photoUrl;
     @Column(length = 45)
     protected String address;
-    @Column(length = 200)
+    @Column(length = 200, nullable = false)
     protected String cv1Url;
     @Column(length = 200)
     protected String cv2Url;
@@ -55,4 +54,18 @@ public class Person {
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
     protected User user;
 
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "place_id", referencedColumnName = "place_id", nullable = false)
+    protected Place place;
+
+    public Person(String firstName, String lastName, LocalDate birthDate, String phoneNumber, String description, JobModality preferredModality, String address) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.birthDate = birthDate;
+        this.phoneNumber = phoneNumber;
+        this.description = description;
+        this.preferredModality = preferredModality;
+        this.address = address;
+    }
 }

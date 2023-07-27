@@ -35,6 +35,15 @@ public class User {
     @OneToOne(mappedBy = "user")
     @JsonIgnore
     protected Person person;
+    @OneToOne(mappedBy = "user")
+    @JsonIgnore
+    protected Publisher publisher;
+
+    public User(String email, String password, UserRole role) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
 
     @Override
     public String toString() {

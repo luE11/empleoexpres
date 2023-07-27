@@ -9,3 +9,7 @@ h1.index-title {
 img.card-image {
     height: 20vw;
 }
+
+.h-fit-content {
+    height: fit-content !important;
+}
