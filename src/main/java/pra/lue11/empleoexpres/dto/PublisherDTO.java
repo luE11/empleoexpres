@@ -3,11 +3,11 @@ package pra.lue11.empleoexpres.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.Length;
 import org.springframework.web.multipart.MultipartFile;
 import pra.lue11.empleoexpres.model.Publisher;
 import pra.lue11.empleoexpres.model.User;
@@ -26,12 +26,12 @@ public class PublisherDTO {
     @NotEmpty
     protected String email;
     @NotEmpty
-    @Length(min = 8, max = 20)
+    @Size(min = 8, max = 20)
     protected String password;
     @NotEmpty
     protected String name;
     @NotEmpty
-    @Length(min = 20, max = 300)
+    @Size(min = 20, max = 300)
     protected String description;
     @FileType(typesAllowed = { "jpg", "png" }, message = "El logo debe ser una imagen con formato .jpg o .png")
     protected MultipartFile logo = null;

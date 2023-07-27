@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -38,20 +39,19 @@ public class WebSecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
-                authorizationManagerRequestMatcherRegistry.requestMatchers(HttpMethod.GET, GET_PERMITTED_PATHS).permitAll()
+                .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
+                        .requestMatchers(HttpMethod.GET, GET_PERMITTED_PATHS).permitAll()
                         .requestMatchers(HttpMethod.POST, POST_PERMITTED_PATHS).permitAll()
-                    .anyRequest().authenticated();
-            })
-            .formLogin(login -> login
-                    .loginPage("/login")
-                    .usernameParameter("email")
-                    .defaultSuccessUrl("/home")
-                    .failureUrl("/login?error")
-                    .permitAll()
-            )
-            .logout(LogoutConfigurer::permitAll)
-            .rememberMe();
+                        .anyRequest().authenticated())
+                .formLogin(login -> login
+                        .loginPage("/login")
+                        .usernameParameter("email")
+                        .defaultSuccessUrl("/home")
+                        .failureUrl("/login?error")
+                        .permitAll()
+                )
+                .logout(LogoutConfigurer::permitAll)
+                .rememberMe(Customizer.withDefaults());
 
         return http.build();
     }

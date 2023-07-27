@@ -2,17 +2,16 @@ package pra.lue11.empleoexpres.controller;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 import pra.lue11.empleoexpres.dto.CandidateDTO;
 import pra.lue11.empleoexpres.dto.PublisherDTO;
 import pra.lue11.empleoexpres.service.PersonService;
+import pra.lue11.empleoexpres.service.PlaceService;
 import pra.lue11.empleoexpres.service.PublisherService;
 import pra.lue11.empleoexpres.service.UserService;
 
@@ -31,6 +30,7 @@ public class AuthController {
 
     private UserService userService;
     private PersonService personService;
+    private PlaceService placeService;
     private PublisherService publisherService;
 
     @GetMapping(value = "/login")
@@ -47,8 +47,8 @@ public class AuthController {
 
     /**
      * Change user to candidate/company
-     * @param model
-     * @return
+     * @param model template model
+     * @return name of register form template
      */
     @GetMapping(value = "/signin")
     public String showRegisterForm(@RequestParam("role") Optional<String> userRole, Model model) {
@@ -57,6 +57,10 @@ public class AuthController {
             model.addAttribute("user",
                     (userRole.get().compareTo("candidate") == 0 ? new CandidateDTO() : new PublisherDTO()));
             model.addAttribute("userRole", userRole);
+            if(userRole.get().compareTo("candidate")==0){
+                model.addAttribute("jobModalities", personService.getPreferredJobModalities());
+                model.addAttribute("places", placeService.getAllPlaces());
+            }
         }else {
             model.addAttribute("userRole", Optional.empty());
         }
@@ -64,8 +68,22 @@ public class AuthController {
     }
 
     @PostMapping(value = "/signin-candidate")
-    public String signInCandidate(@Valid CandidateDTO candidateDTO){
-        return SIGNIN_TEMPLATE;
+    public String signInCandidate(@Valid @ModelAttribute(name = "user") CandidateDTO user, BindingResult result, Model model) throws IOException {
+        boolean error = result.hasErrors();
+        if(checkEmailInUse(user.getEmail())){
+            result.rejectValue("email", "", "El correo ingresado ya se encuentra en uso");
+            error = true;
+        }
+        if(error){
+            model.addAttribute("userRole", Optional.of("candidate"));
+            model.addAttribute("user", user);
+            model.addAttribute("jobModalities", personService.getPreferredJobModalities());
+            model.addAttribute("places", placeService.getAllPlaces());
+            return SIGNIN_TEMPLATE;
+        }
+        personService.insert(user);
+        model.addAttribute("message", "Usuario registrado exitosamente");
+        return LOGIN_TEMPLATE;
     }
 
     @PostMapping(value = "/signin-publisher")
@@ -87,6 +105,11 @@ public class AuthController {
 
     private boolean checkEmailInUse(String email){
         return userService.userExistsByEmail(email);
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }
 
 }

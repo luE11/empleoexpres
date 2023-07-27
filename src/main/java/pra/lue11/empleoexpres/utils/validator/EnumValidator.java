@@ -16,7 +16,7 @@ public class EnumValidator implements ConstraintValidator<EnumVal, String> {
 
     @Override
     public void initialize(EnumVal constraintAnnotation) {
-        valueList = new ArrayList<String>();
+        valueList = new ArrayList<>();
         Class<? extends Enum<?>> enumClass = constraintAnnotation.enumClass();
 
         @SuppressWarnings("rawtypes")
@@ -29,7 +29,7 @@ public class EnumValidator implements ConstraintValidator<EnumVal, String> {
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        return valueList.contains(value.toUpperCase());
+        return value!=null && valueList.contains(value.toUpperCase());
     }
 
 }
