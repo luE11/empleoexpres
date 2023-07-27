@@ -50,7 +50,10 @@ public class WebSecurityConfig {
                         .failureUrl("/login?error")
                         .permitAll()
                 )
-                .logout(LogoutConfigurer::permitAll)
+                .logout((logout) -> {
+                    logout.logoutUrl("/logout")
+                            .logoutSuccessUrl("/login?logout");
+                })
                 .rememberMe(Customizer.withDefaults());
 
         return http.build();
