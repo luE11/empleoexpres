@@ -7,8 +7,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import pra.lue11.empleoexpres.model.enums.JobModality;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author luE11 on 18/07/23
@@ -48,6 +51,9 @@ public class Person {
     protected String cv2Url;
     @Column(length = 200)
     protected String cv3Url;
+    @Column(name = "created_at", updatable = false, insertable = false)
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
     @JsonIgnore
     @OneToOne
@@ -67,5 +73,9 @@ public class Person {
         this.description = description;
         this.preferredModality = preferredModality;
         this.address = address;
+    }
+
+    public String getCreatedAtAsString() {
+        return createdAt.format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy, 'a las' hh:mm a"));
     }
 }

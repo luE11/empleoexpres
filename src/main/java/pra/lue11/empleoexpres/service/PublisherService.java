@@ -25,11 +25,10 @@ public class PublisherService {
     }
 
     public Publisher insert(PublisherDTO publisherDTO) throws IOException {
-        System.out.println("Insertando publisher");
         User user = userService.insert(publisherDTO.generateUser());
         Publisher publisher = publisherDTO.generateCompany();
         publisher.setUser(user);
-        if(publisherDTO.getLogo()!=null)
+        if(publisherDTO.getLogo()!=null && !publisherDTO.getLogo().isEmpty())
             publisher.setLogoUrl(uploadFile("logo_"+ publisher.getCompanyName(), publisherDTO.getLogo()));
         return publisherRepository.save(publisher);
     }

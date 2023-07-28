@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Index</title>
+</head>
+
+<body>
+    <!-- Candidate left panel with main info -->
+    <div th:fragment="candidate-main-panel">
+        <div class="ratio ratio-1x1 w-50 mx-auto">
+            <img class="img-thumbnail rounded-circle" th:src="${candidate.getPhotoUrl()!=null} ? '/'+${candidate.getPhotoUrl()} : '/images/default_user_photo.svg'" alt="User photo"
+                 data-bs-toggle="tooltip" data-bs-title="Carga una foto para reemplazar esta imagen">
+        </div>
+
+
+
+        <script th:if="${candidate.getPhotoUrl()==null}">
+            document.addEventListener("DOMContentLoaded", function(event) {
+                const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+                const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+            })
+        </script>
+    </div>
+
+    <!-- Candidate right panel with additional info -->
+    <div th:fragment="candidate-info-panel" class="p-3 text-start me-5">
+
+    </div>
+
+    <!-- Publisher left panel with main info -->
+    <div th:fragment="publisher-main-panel">
+        <div class="ratio ratio-1x1 w-50 mx-auto">
+            <img class="img-thumbnail rounded-circle" th:src="${publisher.getLogoUrl()!=null} ? '/'+${publisher.getLogoUrl()} : '/images/default_user_photo.svg'" alt="User photo"
+                 data-bs-toggle="tooltip" data-bs-title="Carga un logo para reemplazar esta imagen">
+        </div>
+        <p class="text-capitalize fs-3 fw-bold text-primary my-3" th:text="${publisher.getCompanyName()}"></p>
+        <p class="text-start fs-5"><i class="text-black-50 bi bi-at me-3"></i><span th:text="${user.getEmail()}"></span></p>
+        <script th:if="${publisher.getLogoUrl()==null}">
+            document.addEventListener("DOMContentLoaded", function(event) {
+                const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+                const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+            })
+        </script>
+    </div>
+
+    <!-- Publisher right panel with additional info -->
+    <div th:fragment="publisher-info-panel" class="p-3 text-start mx-5">
+        <p class="fs-3 fw-bold text-primary mb-4">Descripción de la empresa</p>
+        <p th:text="${publisher.getDescription()}"></p>
+        <hr>
+        <p>Empresa creada en: <span th:text="${publisher.getCreatedAtAsString()}"></span></p>
+        <p>Más info? Num de trabajos publicados, fecha de registro</p>
+    </div>
+
+</body>
+
+</html>

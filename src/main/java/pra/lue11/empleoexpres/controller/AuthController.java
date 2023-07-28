@@ -41,7 +41,6 @@ public class AuthController {
 
         if (logout.isPresent())
             model.addAttribute("message", "Sesión cerrada exitosamente");
-
         return LOGIN_TEMPLATE;
     }
 

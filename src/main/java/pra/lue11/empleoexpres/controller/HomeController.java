@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import pra.lue11.empleoexpres.model.User;
+import pra.lue11.empleoexpres.model.enums.UserRole;
 import pra.lue11.empleoexpres.service.PersonService;
 import pra.lue11.empleoexpres.service.UserService;
 
@@ -17,7 +18,7 @@ import pra.lue11.empleoexpres.service.UserService;
 @AllArgsConstructor
 public class HomeController {
 
-    private final String INDEX_TEMPLATE = "index";
+    private final String PROFILE_TEMPLATE = "user/my-profile";
     private final String HOME_TEMPLATE = "user/home";
 
     private UserService userService;
@@ -29,9 +30,16 @@ public class HomeController {
         return HOME_TEMPLATE;
     }
 
-    /**
-     * TODO: Logout method
-     */
+    @GetMapping(value = "/profile")
+    public String showSelfProfile(Authentication authentication, Model model) {
+        User self = getUserFromAuth(authentication);
+        model.addAttribute("user", self);
+        if(self.isPublisher())
+            model.addAttribute("publisher", self.getPublisher());
+        else
+            model.addAttribute("candidate", self.getPerson());
+        return PROFILE_TEMPLATE;
+    }
 
     private User getUserFromAuth(Authentication authentication){
         return userService.findUserByEmail(authentication.getName()).orElseThrow(() -> new EntityNotFoundException("Logged user not found"));

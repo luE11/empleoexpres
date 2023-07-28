@@ -7,6 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author luE11 on 21/07/23
@@ -31,6 +35,9 @@ public class Publisher {
     protected String logoUrl;
     @Column(nullable = false)
     protected boolean visible;
+    @Column(name = "created_at", updatable = false, insertable = false)
+    @CreationTimestamp
+    private LocalDateTime createdAt;
     @JsonIgnore
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
@@ -40,5 +47,9 @@ public class Publisher {
         this.companyName = companyName;
         this.description = description;
         this.visible = visible;
+    }
+
+    public String getCreatedAtAsString() {
+        return createdAt.format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy, 'a las' hh:mm a"));
     }
 }
