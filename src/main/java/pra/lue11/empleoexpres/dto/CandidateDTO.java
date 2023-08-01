@@ -43,7 +43,7 @@ public class CandidateDTO {
     protected String description;
     @EnumVal(enumClass = JobModality.class, message = "Debe seleccionar una opción")
     protected String preferredModality;
-    @FileType(typesAllowed = { "jpg", "png" })
+    @FileType(typesAllowed = { "jpg", "png" }, message = "La foto debe ser una imagen con formato .jpg o .png")
     protected MultipartFile photo;
     @Size(min = 8)
     protected String address;
@@ -53,6 +53,9 @@ public class CandidateDTO {
     protected MultipartFile cv2;
     @FileType(typesAllowed = { "pdf" }, message = "El archivo debe ser de tipo .pdf")
     protected MultipartFile cv3;
+    @NotEmpty
+    @Size(max = 50)
+    protected String position;
     @NotNull(message = "Debe elegir una ciudad")
     protected Integer placeId;
 
@@ -60,8 +63,8 @@ public class CandidateDTO {
         return new User(email, password, UserRole.CANDIDATE);
     }
 
-    public Person generatePerson(){
+    public Person generatePerson() {
         return new Person(firstName, lastName, birthDate, phoneNumber,
-                description, JobModality.valueOf(preferredModality), address);
+                description, JobModality.valueOf(preferredModality), address, position);
     }
 }

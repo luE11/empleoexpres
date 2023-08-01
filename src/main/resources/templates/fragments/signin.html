@@ -10,9 +10,18 @@
     <!-- CANDIDATE SIGNIN FORM FIELDS -->
     <div th:fragment="candidate">
         <div class="row g-3 my-2">
+            <div class="col-md-8 offset-md-2">
+                <div class="form-floating" th:classappend="${#fields.hasErrors('position')} ? 'is-invalid':''">
+                    <input id="position" th:classappend="${#fields.hasErrors('position')} ? 'is-invalid':''" autofocus="true" class="form-control" type="text" th:field="*{position}" placeholder="Cargo actual o deseado (Ejm. Desarrollador Java Junior)">
+                    <label for="position">Cargo actual o deseado (*)</label>
+                </div>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('position')}" th:errors="*{position}"></div>
+            </div>
+        </div>
+        <div class="row g-3 my-2">
             <div class="col-md-6">
                 <div class="form-floating" th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid':''">
-                    <input id="firstName" th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid':''" autofocus="true" class="form-control" type="text" th:field="*{firstName}" placeholder="Nombres (*)">
+                    <input id="firstName" th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid':''" class="form-control" type="text" th:field="*{firstName}" placeholder="Nombres (*)">
                     <label for="firstName">Nombres (*)</label>
                 </div>
                 <div class="invalid-feedback" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
@@ -43,8 +52,8 @@
         </div>
         <div>
             <div class="form-floating" th:classappend="${#fields.hasErrors('description')} ? 'is-invalid':''">
-                <textarea class="form-control" type="text" rows="3" th:field="*{description}" id="profile_description" placeholder="Descripción" th:classappend="${#fields.hasErrors('description')} ? 'is-invalid':''"></textarea>
-                <label for="profile_description">Descripción</label>
+                <textarea class="form-control h-25" type="text" rows="5" th:field="*{description}" id="profile_description" placeholder="Descripción" th:classappend="${#fields.hasErrors('description')} ? 'is-invalid':''" maxlength="500"></textarea>
+                <label for="profile_description">Descripción (<span id="count_message"></span>)</label>
             </div>
             <div class="invalid-feedback" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
         </div>
@@ -135,6 +144,15 @@
                     format: 'dd/mm/yyyy',
                     endDate: d
                 });
+
+                var text_max = 500;
+                $('#count_message').html('0 / ' + text_max );
+
+                $('#profile_description').keyup(function() {
+                  var text_length = $('#profile_description').val().length;
+                  var text_remaining = text_max - text_length;
+                  $('#count_message').html(text_length + ' / ' + text_max);
+                });
             });
         </script>
     </div>
@@ -158,8 +176,8 @@
         </div>
         <div class="my-2">
             <div class="form-floating" th:classappend="${#fields.hasErrors('description')} ? 'is-invalid':''">
-                <textarea class="form-control" type="text" rows="3" th:field="*{description}" id="description" placeholder="Descripción (*)" th:classappend="${#fields.hasErrors('description')} ? 'is-invalid':''"></textarea>
-                <label for="description">Descripción (*)</label>
+                <textarea class="form-control h-25" type="text" rows="5" th:field="*{description}" id="pub_description" placeholder="Descripción (*)" th:classappend="${#fields.hasErrors('description')} ? 'is-invalid':''" maxlength="500"></textarea>
+                <label for="pub_description">Descripción (<span id="count_pub_desc"></span>) (*)</label>
             </div>
             <div class="invalid-feedback" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
         </div>
@@ -168,6 +186,18 @@
             <label class="form-check-label" for="visible">Empresa visible</label>
             <div class="invalid-feedback" th:if="${#fields.hasErrors('visible')}" th:errors="*{visible}"></div>
         </div>
+        <script type="text/javascript">
+            document.addEventListener("DOMContentLoaded", function(event) {
+                var text_max = 500;
+                $('#count_pub_desc').html('0 / ' + text_max );
+
+                $('#pub_description').keyup(function() {
+                  var text_length = $('#pub_description').val().length;
+                  var text_remaining = text_max - text_length;
+                  $('#count_pub_desc').html(text_length + ' / ' + text_max);
+                });
+            });
+        </script>
     </div>
     <!-- SELECT USER ROLE SIGNIN COMPONENT -->
     <div th:fragment="select-user-role" class="container-fluid px-5 pt-3">

@@ -29,13 +29,13 @@ public class Publisher {
     protected Integer id;
     @Column(length = 45, nullable = false)
     protected String companyName;
-    @Column(length = 300, nullable = false)
+    @Column(length = 500, nullable = false)
     protected String description;
     @Column(length = 200)
     protected String logoUrl;
     @Column(nullable = false)
     protected boolean visible;
-    @Column(name = "created_at", updatable = false, insertable = false)
+    @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
     @JsonIgnore

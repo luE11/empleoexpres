@@ -10,11 +10,25 @@
     <!-- Candidate left panel with main info -->
     <div th:fragment="candidate-main-panel">
         <div class="ratio ratio-1x1 w-50 mx-auto">
-            <img class="img-thumbnail rounded-circle" th:src="${candidate.getPhotoUrl()!=null} ? '/'+${candidate.getPhotoUrl()} : '/images/default_user_photo.svg'" alt="User photo"
+            <img class="img-thumbnail rounded-circle object-fit-cover" th:src="${candidate.getPhotoUrl()!=null} ? '/'+${candidate.getPhotoUrl()} : '/images/default_user_photo.svg'" alt="User photo"
                  data-bs-toggle="tooltip" data-bs-title="Carga una foto para reemplazar esta imagen">
         </div>
-
-
+        <div class="text-capitalize text-primary my-3">
+            <p class="fs-3 fw-bold mb-0" th:text="${candidate.getFullName()}"></p>
+            <p class="fs-5" th:text="${candidate.getFullName()}"></p>
+        </div>
+        <div class="fs-5 text-start">
+            <p class="mb-1"><i class="text-black-50 bi bi-at me-3"></i><span th:text="${user.getEmail()}"></span></p>
+            <p class="mb-1"><i class="text-black-50 bi bi-buildings me-3"></i><span th:text="${candidate.getCityName()}"></span></p>
+            <p class="mb-1" th:if="${candidate.getPhoneNumber()!=null}">
+                <i class="text-black-50 bi bi-telephone me-3"></i><span th:text="${candidate.getPhoneNumber()}"></span>
+            </p>
+            <p class="mb-1" th:if="${candidate.getAddress()!=null}">
+                <i class="text-black-50 bi bi-pin-map-fill me-3"></i><span th:text="${candidate.getAddress()}"></span>
+            </p>
+            <p class="mb-1"><i class="text-black-50 bi bi-briefcase me-3"></i><span th:text="${candidate.getModality()}"></span></p>
+        </div>
+        <!-- Download resume?? -->
 
         <script th:if="${candidate.getPhotoUrl()==null}">
             document.addEventListener("DOMContentLoaded", function(event) {
@@ -26,13 +40,50 @@
 
     <!-- Candidate right panel with additional info -->
     <div th:fragment="candidate-info-panel" class="p-3 text-start me-5">
-
+        <div class="mb-2">
+            <p class="fs-3 fw-bold text-primary mb-4">Resumen profesional</p>
+            <p th:if="${candidate.getDescription()==null}">No incluída.</p>
+            <p th:unless="${candidate.getDescription()==null}" th:text="${candidate.getDescription()}"></p>
+        </div>
+        <div class="mb-2">
+            <p class="d-inline-flex gap-1">
+                <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCvs" aria-expanded="false">
+                    Hojas de vida registradas <span class="badge rounded-pill text-bg-success" th:text="${candidate.getCvCount()}"></span>
+                </button>
+            </p>
+            <div class="collapse" id="collapseCvs">
+                <div class="card card-body">
+                    <div class="list-group ">
+                        <a th:href="'/'+${candidate.getCv1Url()}" class="list-group-item list-group-item-action d-flex justify-content-between list-group-item-primary" download>
+                            Descargar hoja de vida 1
+                            <i class="bi bi-download"></i>
+                        </a>
+                        <a th:if="${candidate.getCv2Url()!=null}" th:href="'/'+${candidate.getCv2Url()}" class="list-group-item list-group-item-action d-flex justify-content-between list-group-item-primary" download>
+                            Descargar hoja de vida 2
+                            <i class="bi bi-download"></i>
+                        </a>
+                        <a th:if="${candidate.getCv3Url()!=null}" th:href="'/'+${candidate.getCv3Url()}" class="list-group-item list-group-item-action d-flex justify-content-between list-group-item-primary" download>
+                            Descargar hoja de vida 3
+                            <i class="bi bi-download"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <p>Candidato registrado en: <span th:text="${candidate.getCreatedAtAsString()}"></span></p>
+        </div>
+        <div class="mb-5" > <!-- Revisar si no tiene experiencia laboral -->
+            <p class="fs-3 fw-bold text-primary mb-4">Experiencia laboral</p>
+        </div>
+        <div>
+            <p class="fs-3 fw-bold text-primary mb-4">Educación</p>
+        </div>
     </div>
 
     <!-- Publisher left panel with main info -->
     <div th:fragment="publisher-main-panel">
         <div class="ratio ratio-1x1 w-50 mx-auto">
-            <img class="img-thumbnail rounded-circle" th:src="${publisher.getLogoUrl()!=null} ? '/'+${publisher.getLogoUrl()} : '/images/default_user_photo.svg'" alt="User photo"
+            <img class="img-thumbnail rounded-circle object-fit-cover" th:src="${publisher.getLogoUrl()!=null} ? '/'+${publisher.getLogoUrl()} : '/images/default_user_photo.svg'" alt="User photo"
                  data-bs-toggle="tooltip" data-bs-title="Carga un logo para reemplazar esta imagen">
         </div>
         <p class="text-capitalize fs-3 fw-bold text-primary my-3" th:text="${publisher.getCompanyName()}"></p>

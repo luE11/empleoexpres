@@ -51,7 +51,9 @@ public class Person {
     protected String cv2Url;
     @Column(length = 200)
     protected String cv3Url;
-    @Column(name = "created_at", updatable = false, insertable = false)
+    @Column(length = 50)
+    protected String position;
+    @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
 
@@ -65,7 +67,7 @@ public class Person {
     @JoinColumn(name = "place_id", referencedColumnName = "place_id", nullable = false)
     protected Place place;
 
-    public Person(String firstName, String lastName, LocalDate birthDate, String phoneNumber, String description, JobModality preferredModality, String address) {
+    public Person(String firstName, String lastName, LocalDate birthDate, String phoneNumber, String description, JobModality preferredModality, String address, String position) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
@@ -73,9 +75,25 @@ public class Person {
         this.description = description;
         this.preferredModality = preferredModality;
         this.address = address;
+        this.position = position;
     }
 
     public String getCreatedAtAsString() {
         return createdAt.format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy, 'a las' hh:mm a"));
     }
+
+    public String getFullName(){
+        return firstName+" "+lastName;
+    }
+
+    public String getCityName() { return place.getName(); }
+
+    public String getModality() { return preferredModality.getModality(); }
+
+    public int getCvCount() {
+        int num = 1;
+        if(cv2Url!=null && !cv2Url.isEmpty()) num++;
+        if(cv3Url!=null && !cv3Url.isEmpty()) num++;
+        return num;
+    };
 }
