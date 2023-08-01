@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.configurers.LogoutConf
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -38,6 +39,7 @@ public class WebSecurityConfig {
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.addFilterBefore(new LoginPageFilter(), DefaultLoginPageGeneratingFilter.class);
         http
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
                         .requestMatchers(HttpMethod.GET, GET_PERMITTED_PATHS).permitAll()
@@ -50,7 +52,10 @@ public class WebSecurityConfig {
                         .failureUrl("/login?error")
                         .permitAll()
                 )
-                .logout(LogoutConfigurer::permitAll)
+                .logout((logout) -> {
+                    logout.logoutUrl("/logout")
+                            .logoutSuccessUrl("/login?logout");
+                })
                 .rememberMe(Customizer.withDefaults());
 
         return http.build();

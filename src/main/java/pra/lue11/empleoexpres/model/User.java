@@ -45,6 +45,10 @@ public class User {
         this.role = role;
     }
 
+    public boolean isPublisher(){
+        return this.role.compareTo(UserRole.PUBLISHER)==0;
+    }
+
     @Override
     public String toString() {
         return "User{" +

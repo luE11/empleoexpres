@@ -31,7 +31,7 @@ public class PublisherDTO {
     @NotEmpty
     protected String name;
     @NotEmpty
-    @Size(min = 20, max = 300)
+    @Size(min = 20, max = 500)
     protected String description;
     @FileType(typesAllowed = { "jpg", "png" }, message = "El logo debe ser una imagen con formato .jpg o .png")
     protected MultipartFile logo = null;
