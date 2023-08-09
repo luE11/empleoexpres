@@ -9,6 +9,10 @@
 </head>
 <body>
     <nav th:replace="~{fragments/loggedin.html :: navbar }"></nav>
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>Atención!</strong> <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
     <div class="container-fluid m-3">
         <a class="btn text-info" th:href="@{/home}"><i class="bi bi-arrow-left-square"></i> Volver</a>
         <div class="pt-3 mx-4 text-center">

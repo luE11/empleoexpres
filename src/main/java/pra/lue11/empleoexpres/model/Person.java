@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author luE11 on 18/07/23
@@ -72,6 +73,10 @@ public class Person {
     @OneToMany(mappedBy = "candidate")
     protected List<JobHistory> jobHistories;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    private Set<PersonHasStudy> studies;
+
     public Person(String firstName, String lastName, LocalDate birthDate, String phoneNumber, String description, JobModality preferredModality, String address, String position) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -101,4 +106,14 @@ public class Person {
         if(cv3Url!=null && !cv3Url.isEmpty()) num++;
         return num;
     };
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object)
+            return true;
+        if (object == null || getClass() != object.getClass())
+            return false;
+        Person person = (Person) object;
+        return user.getEmail().equals(person.user.email);
+    }
 }

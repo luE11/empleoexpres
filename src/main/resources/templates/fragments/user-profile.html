@@ -88,6 +88,11 @@
                 <div th:each="job : ${jobs}" class="col">
                     <div class="card border-info h-100">
                         <div class="card-body">
+                            <form th:action="@{/job-history/{jobHistoryId}(jobHistoryId = ${job.getId()})}" th:method="delete" >
+                                <button type="submit" class="btn btn-outline-danger float-end">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </form>
                             <h5 class="card-title" th:text="${job.getPosition()}"></h5>
                             <div class="card-text">
                                 <p th:text="${job.getDescription()}"></p>

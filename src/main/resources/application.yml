@@ -3,6 +3,10 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     url: ${DB_URL}
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
   jpa:
     show-sql: true
     defer-datasource-initialization: true
@@ -22,3 +26,4 @@ spring:
   devtools:
     restart:
       enabled: true
+
