@@ -6,6 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import pra.lue11.empleoexpres.dto.JobHistoryDTO;
 import pra.lue11.empleoexpres.model.User;
 import pra.lue11.empleoexpres.model.enums.UserRole;
 import pra.lue11.empleoexpres.service.PersonService;
@@ -36,8 +37,10 @@ public class HomeController {
         model.addAttribute("user", self);
         if(self.isPublisher())
             model.addAttribute("publisher", self.getPublisher());
-        else
+        else{
             model.addAttribute("candidate", self.getPerson());
+            model.addAttribute("newJhistory", new JobHistoryDTO());
+        }
         return PROFILE_TEMPLATE;
     }
 

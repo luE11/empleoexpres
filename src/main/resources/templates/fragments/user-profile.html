@@ -15,7 +15,7 @@
         </div>
         <div class="text-capitalize text-primary my-3">
             <p class="fs-3 fw-bold mb-0" th:text="${candidate.getFullName()}"></p>
-            <p class="fs-5" th:text="${candidate.getFullName()}"></p>
+            <p class="fs-5" th:text="${candidate.getPosition()}"></p>
         </div>
         <div class="fs-5 text-start">
             <p class="mb-1"><i class="text-black-50 bi bi-at me-3"></i><span th:text="${user.getEmail()}"></span></p>
@@ -72,12 +72,111 @@
             <hr>
             <p>Candidato registrado en: <span th:text="${candidate.getCreatedAtAsString()}"></span></p>
         </div>
-        <div class="mb-5" > <!-- Revisar si no tiene experiencia laboral -->
-            <p class="fs-3 fw-bold text-primary mb-4">Experiencia laboral</p>
+        <div class="mb-5" th:with="jobs=${candidate.getJobHistories()}"> <!-- Revisar si no tiene experiencia laboral -->
+            <div class="d-flex justify-content-between mb-3">
+                <p class="fs-3 fw-bold text-primary mb-0">Experiencia laboral</p>
+                <!-- Solo si el objeto usuario autenticado es igual al usuario mostrado ${user} -->
+                <button id="toggle-job-offcanvas"
+                        th:if="${#authentication.name.compareTo(user.getEmail())==0}"
+                        class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#job-form" aria-controls="job-form">
+                    Agregar experiencia laboral
+                </button>
+            </div>
+            <p th:if="${jobs.isEmpty()}">No se ha registrado experiencia laboral.</p>
+            <!-- Tarjetas con info de historial de empleos -->
+            <div th:unless="${jobs.isEmpty()}" class="row row-cols-1 row-cols-md-2 g-4">
+                <div th:each="job : ${jobs}" class="col">
+                    <div class="card border-info h-100">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${job.getPosition()}"></h5>
+                            <div class="card-text">
+                                <p th:text="${job.getDescription()}"></p>
+                                <p><strong>Fecha de inicio: </strong><span th:text="${job.getInitDate()}"></span></p>
+                                <p th:if="${job.getEndDate()!=null}"><strong>Fecha de finalización: </strong><span th:text="${job.getEndDate()}"></span></p>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <small class="text-body-secondary">
+                                <span th:if="${job.getEndDate()==null}">Empleo actual</span>
+                                <span th:unless="${job.getEndDate()==null}">Empleo finalizado</span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
         <div>
             <p class="fs-3 fw-bold text-primary mb-4">Educación</p>
         </div>
+
+        <!-- Formulario creación/edición trabajo -->
+        <div class="offcanvas offcanvas-end p-3 overflow-auto" tabindex="-1" id="job-form" aria-labelledby="jobform-title">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="jobform-title">Insertar nueva experiencia laboral</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <form method="POST"
+                      th:action="@{/job-history}" th:object="${newJhistory}" class="my-form">
+                    <h3 class="text-center my-3">Ingrese la información solicitada a continuación</h3>
+                    <div class="text-center">
+                        <div class="mb-2">
+                            <div class="form-floating" th:classappend="${#fields.hasErrors('position')} ? 'is-invalid':''">
+                                <input id="position" th:field="*{position}" class="form-control" placeholder="Posición (*)" type="text" th:classappend="${#fields.hasErrors('position')} ? 'is-invalid':''" />
+                                <label for="position">Posición (*)</label>
+                            </div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('position')}" th:errors="*{position}"></div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="form-floating" th:classappend="${#fields.hasErrors('description')} ? 'is-invalid':''">
+                                <!-- Cambiar por textarea -->
+                                <textarea id="description" th:field="*{description}" class="form-control" placeholder="Descripción (*)" type="text" th:classappend="${#fields.hasErrors('description')} ? 'is-invalid':''"></textarea>
+                                <label for="description">Descripción (*)</label>
+                            </div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+                        </div>
+
+                        <!-- initDate y endDate -->
+                        <div class="mb-2">
+                            <div class='form-floating date' th:classappend="${#fields.hasErrors('initDate')} ? 'is-invalid':''">
+                                <input type='text' class="form-control" placeholder="Fecha de inicio (*)" id='initdatepicker' th:field="*{initDate}" th:classappend="${#fields.hasErrors('initDate')} ? 'is-invalid':''" />
+                                <label for="initdatepicker">Fecha de inicio (*)</label>
+                            </div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('initDate')}" th:errors="*{initDate}"></div>
+                        </div>
+
+                        <div class="mb-2">
+                            <div class='form-floating date' th:classappend="${#fields.hasErrors('endDate')} ? 'is-invalid':''">
+                                <input type='text' class="form-control" placeholder="Fecha de finalización" id='enddatepicker' th:field="*{endDate}" th:classappend="${#fields.hasErrors('endDate')} ? 'is-invalid':''" />
+                                <label for="enddatepicker">Fecha de finalización</label>
+                            </div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}"></div>
+                        </div>
+
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                        <button class="btn btn-lg btn-primary" type="submit">Registrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script>
+            document.addEventListener("DOMContentLoaded", function(event) {
+                var d = new Date();
+                d.setDate(d.getDate() - 1);
+                $("[id*='datepicker']").datepicker({
+                    format: 'dd/mm/yyyy',
+                    endDate: d
+                })
+            });
+        </script>
+        <script th:if="${jobOffcanvas!=null}">
+            document.addEventListener("DOMContentLoaded", function(event) {
+                document.getElementById('toggle-job-offcanvas').click();
+            })
+        </script>
+
     </div>
 
     <!-- Publisher left panel with main info -->

@@ -12,6 +12,7 @@ import pra.lue11.empleoexpres.model.enums.JobModality;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 /**
  * @author luE11 on 18/07/23
@@ -66,6 +67,10 @@ public class Person {
     @ManyToOne
     @JoinColumn(name = "place_id", referencedColumnName = "place_id", nullable = false)
     protected Place place;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "candidate")
+    protected List<JobHistory> jobHistories;
 
     public Person(String firstName, String lastName, LocalDate birthDate, String phoneNumber, String description, JobModality preferredModality, String address, String position) {
         this.firstName = firstName;
