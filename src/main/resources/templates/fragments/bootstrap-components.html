@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Index</title>
+</head>
+
+<body>
+    <!-- Thymeleaf component with bootstrap date picker
+       th:replace="~{fragments/bootstrap-components.html :: date(field='birthDate', placeholder='Fecha cumple (*)',
+        dateId='birthDatePicker', fieldLabel='Fecha de cumpleaños (*)', pastDate=true) }"
+      -->
+    <div th:fragment="date">
+      <div class='form-floating date' th:classappend="${#fields.hasErrors(field)} ? 'is-invalid':''">
+        <input type='text' class="form-control" th:placeholder="${placeholder}" th:id='${dateId}'
+               th:field="*{__${field}__}" th:classappend="${#fields.hasErrors(field)} ? 'is-invalid':''"/>
+        <label th:for="${dateId}" th:text="${fieldLabel}"></label>
+      </div>
+      <div class="invalid-feedback" th:if="${#fields.hasErrors(field)}" th:errors="*{__${field}__}"></div>
+      <script type="text/javascript">
+            function setDate(isPast) {
+              var d = new Date();
+              d.setDate(d.getDate() - 1);
+              $("[id*='datepicker']").datepicker({
+                  format: 'dd/mm/yyyy',
+                  endDate: (isPast) ? d : null
+              });
+            }
+      </script>
+      <script th:if="${pastDate}">
+        document.addEventListener("DOMContentLoaded", function(event) {
+                setDate(true)
+            });
+      </script>
+      <script th:unless="${pastDate}">
+        document.addEventListener("DOMContentLoaded", function(event) {
+                setDate(false)
+            });
+      </script>
+    </div>
+
+    <!-- Textarea counter component -->
+
+
+</body>
+
+</html>

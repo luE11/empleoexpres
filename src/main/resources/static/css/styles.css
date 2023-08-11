@@ -15,3 +15,7 @@ img.card-image {
 .h-fit-content {
     height: fit-content !important;
 }
+
+.max-vh-75 {
+    max-height: 75vh !important;
+}
