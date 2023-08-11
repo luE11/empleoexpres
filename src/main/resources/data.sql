@@ -1,3 +1,12 @@
+-- candidate_related_studies view
+CREATE VIEW candidate_related_studies
+    AS SELECT row_number() over (order by s.certificate_name) id, s.certificate_name, ps.entity_name, ps.start_date, ps.end_date, ps.description, +
+            ps.person_id
+            FROM persons p, persons_has_studies ps, studies s
+            WHERE p.person_id=ps.person_id AND ps.study_id=s.study_id;
+
+-- Insert fake data
+
 -- Places
 INSERT INTO places(name) VALUES ('San José'), ('La Soledad'), ('Datuan'), ('Salvacion'), ('Karmai'), ('Chicago'), ('Moneghetti'), ('Kiruna'), ('Arco de Baúlhe'), ('Jinshi'), ('Kochevo'), ('Радолишта'), ('Druya'), ('Guintubhan'), ('Napnapan'), ('Viking'), ('Itororó'), ('Carolina'), ('Bifeng'), ('Datong'), ('Pār Naogaon'), ('Dalmacio Vélez Sársfield'), ('Dālbandīn'), ('Qiling'), ('Szeged'), ('Błonie'), ('Xiabaishi'), ('Bogdaniec'), ('Tha Ruea'), ('Kitami'), ('Horrom'), ('Litibakul'), ('Lexington'), ('San Ignacio de Tupile'), ('Iznoski'), ('Brie-Comte-Robert'), ('Täby'), ('Abade de Neiva'), ('Yefimovskiy'), ('Landskrona'), ('Övertorneå'), ('Taldykorgan'), ('Makoba'), ('Huanghua'), ('Valsamáta'), ('Yegor’yevsk'), ('Tsuruoka'), ('Pochep'), ('Nangger'), ('Mocupe');
 
