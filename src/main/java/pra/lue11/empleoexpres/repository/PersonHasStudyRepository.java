@@ -8,4 +8,5 @@ import pra.lue11.empleoexpres.model.PersonStudyId;
  * @author luE11 on 11/08/23
  */
 public interface PersonHasStudyRepository extends JpaRepository<PersonHasStudy, PersonStudyId> {
+
 }
