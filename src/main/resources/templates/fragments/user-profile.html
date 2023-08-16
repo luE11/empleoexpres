@@ -111,8 +111,44 @@
             </div>
 
         </div>
-        <div>
-            <p class="fs-3 fw-bold text-primary mb-4">Educación</p>
+        <div th:with="studies=${candidate.getStudies()}">
+            <div class="d-flex justify-content-between mb-3">
+                <p class="fs-3 fw-bold text-primary mb-0">Educación</p>
+                <!-- Solo si el objeto usuario autenticado es igual al usuario mostrado ${user} -->
+                <button id="toggle-study-offcanvas"
+                        th:if="${#authentication.name.compareTo(user.getEmail())==0}"
+                        class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#study-form" aria-controls="study-form">
+                    Agregar estudio
+                </button>
+            </div>
+            <p th:if="${studies.isEmpty()}">No se ha registrado ningún estudio.</p>
+            <!-- Tarjetas con info de educación -->
+            <div th:unless="${studies.isEmpty()}" class="row row-cols-1 row-cols-md-2 g-4">
+                <div th:each="study : ${studies}" class="col">
+                    <div class="card border-info h-100">
+                        <div class="card-body">
+                            <form th:action="@{/study/{candidateStudyId}(candidateStudyId = ${study.getStudyId()})}" th:method="delete" >
+                                <button type="submit" class="btn btn-outline-danger float-end">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </form>
+                            <h5 class="card-title" th:text="${study.getCertificateName()}"></h5>
+                            <div class="card-text">
+                                <p><strong th:text="${study.getEntityName()}"></strong></p>
+                                <p th:if="${study.getDescription()!=null}" th:text="${study.getDescription()}"></p>
+                                <p><strong>Fecha de inicio: </strong><span th:text="${study.getStartDate()}"></span></p>
+                                <p th:if="${study.getEndDate()!=null}"><strong>Fecha de finalización: </strong><span th:text="${study.getEndDate()}"></span></p>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <small class="text-body-secondary">
+                                <span th:if="${study.getEndDate()==null}">Estudiando actualmente</span>
+                                <span th:unless="${study.getEndDate()==null}">Estudio finalizado</span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Formulario creación/edición trabajo -->
@@ -135,7 +171,6 @@
                         </div>
                         <div class="mb-2">
                             <div class="form-floating" th:classappend="${#fields.hasErrors('description')} ? 'is-invalid':''">
-                                <!-- Cambiar por textarea -->
                                 <textarea id="description" th:field="*{description}" class="form-control" placeholder="Descripción (*)" type="text" th:classappend="${#fields.hasErrors('description')} ? 'is-invalid':''"></textarea>
                                 <label for="description">Descripción (*)</label>
                             </div>
@@ -166,6 +201,75 @@
                 </form>
             </div>
         </div>
+
+        <!-- Formulario creación/edición estudios -->
+        <div class="offcanvas offcanvas-end p-3 overflow-auto" tabindex="-1" id="study-form" aria-labelledby="studyform-title">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="studyform-title">Insertar estudio</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <form method="POST"
+                      th:action="@{/study}" th:object="${candidateStudy}" class="my-form">
+                    <h3 class="text-center my-3">Ingrese la información solicitada a continuación</h3>
+                    <div class="text-center">
+                        <div class="mb-2">
+                            <div class="row" th:classappend="${#fields.hasErrors('studyId')} ? 'is-invalid':''">
+                                <div class="col">
+                                    <label class="py-2">Ciudad (*)</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <select th:field="*{studyId}" class="selectpicker form-control" title="Seleccione un estudio" th:classappend="${#fields.hasErrors('studyId')} ? 'is-invalid':''" data-live-search="true">
+                                            <option th:each="study:${studies}" th:value="${study.getId()}" th:text="${study.getCertificateName()}"></option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('studyId')}" th:errors="*{studyId}"></div>
+                        </div>
+
+                        <div class="mb-2">
+                            <div class="form-floating" th:classappend="${#fields.hasErrors('entityName')} ? 'is-invalid':''">
+                                <input id="entityName" th:field="*{entityName}" class="form-control" placeholder="Nombre de entidad (*)" type="text" th:classappend="${#fields.hasErrors('entityName')} ? 'is-invalid':''" />
+                                <label for="entityName">Nombre de entidad (*)</label>
+                            </div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('entityName')}" th:errors="*{entityName}"></div>
+                        </div>
+
+                        <!-- initDate y endDate -->
+                        <div class="mb-2">
+                            <div class='form-floating date' th:classappend="${#fields.hasErrors('initDate')} ? 'is-invalid':''">
+                                <input type='text' class="form-control" placeholder="Fecha de inicio (*)" id='initdatepicker2' th:field="*{initDate}" th:classappend="${#fields.hasErrors('initDate')} ? 'is-invalid':''" />
+                                <label for="initdatepicker2">Fecha de inicio (*)</label>
+                            </div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('initDate')}" th:errors="*{initDate}"></div>
+                        </div>
+
+                        <div class="mb-2">
+                            <div class='form-floating date' th:classappend="${#fields.hasErrors('endDate')} ? 'is-invalid':''">
+                                <input type='text' class="form-control" placeholder="Fecha de finalización" id='enddatepicker2' th:field="*{endDate}" th:classappend="${#fields.hasErrors('endDate')} ? 'is-invalid':''" />
+                                <label for="enddatepicker2">Fecha de finalización</label>
+                            </div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}"></div>
+                        </div>
+
+                        <div class="mb-2">
+                            <div class="form-floating" th:classappend="${#fields.hasErrors('description')} ? 'is-invalid':''">
+                                <textarea id="description2" th:field="*{description}" class="form-control" placeholder="Descripción (*)" type="text" th:classappend="${#fields.hasErrors('description')} ? 'is-invalid':''"></textarea>
+                                <label for="description2">Descripción (*)</label>
+                            </div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+                        </div>
+
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                        <button class="btn btn-lg btn-primary" type="submit">Registrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <script>
             document.addEventListener("DOMContentLoaded", function(event) {
                 var d = new Date();
@@ -179,6 +283,11 @@
         <script th:if="${jobOffcanvas!=null}">
             document.addEventListener("DOMContentLoaded", function(event) {
                 document.getElementById('toggle-job-offcanvas').click();
+            })
+        </script>
+        <script th:if="${studyOffcanvas!=null}">
+            document.addEventListener("DOMContentLoaded", function(event) {
+                document.getElementById('toggle-study-offcanvas').click();
             })
         </script>
 

@@ -29,3 +29,10 @@ INSERT INTO persons(first_name, last_name, birth_date, phone_number, description
 INSERT INTO job_histories(description, position, init_date, end_date, person_id) VALUES
     ('Pellentesque porta placerat tortor venenatis consectetur. Nam suscipit mauris in aliquet tempor.',
     'Desarrollador Java Junior', now(), now(), 1);
+
+INSERT INTO studies(certificate_name) VALUES
+	('Ingeniero de sistemas'), ('Desarrollador de Software'), ('Abogado'), ('Licenciado en educación básica'), ('Especialista en desarrollo de sistemas');
+
+INSERT INTO persons_has_studies (entity_name, start_date, end_date, description, person_id, study_id) VALUES
+    ('Universidad Prueba Ejemplar - UPE', now(), now(), 'Pellentesque porta placerat tortor venenatis consectetur nam suscipit mauris.',
+    1, 1);

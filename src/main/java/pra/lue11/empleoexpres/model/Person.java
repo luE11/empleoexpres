@@ -74,7 +74,7 @@ public class Person {
     protected List<JobHistory> jobHistories;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(mappedBy = "person", fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<PersonHasStudy> studies;
 
     public Person(String firstName, String lastName, LocalDate birthDate, String phoneNumber, String description, JobModality preferredModality, String address, String position) {

@@ -45,4 +45,12 @@ public class PersonHasStudy {
         this.endDate = endDate;
         this.description = description;
     }
+
+    public int getStudyId(){
+        return study.getId();
+    }
+
+    public String getCertificateName(){
+        return study.getCertificateName();
+    }
 }

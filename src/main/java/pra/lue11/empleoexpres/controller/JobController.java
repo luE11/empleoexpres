@@ -13,11 +13,13 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pra.lue11.empleoexpres.dto.CandidateDTO;
+import pra.lue11.empleoexpres.dto.CandidateStudyDTO;
 import pra.lue11.empleoexpres.dto.JobHistoryDTO;
 import pra.lue11.empleoexpres.model.JobHistory;
 import pra.lue11.empleoexpres.model.Person;
 import pra.lue11.empleoexpres.model.User;
 import pra.lue11.empleoexpres.service.JobService;
+import pra.lue11.empleoexpres.service.StudyService;
 import pra.lue11.empleoexpres.service.UserService;
 
 import java.io.IOException;
@@ -34,6 +36,7 @@ public class JobController {
 
     private UserService userService;
     private JobService jobService;
+    private StudyService studyService;
 
     @GetMapping(value = "/job-history")
     public String showJobHistory(@RequestParam("email") Optional<String> email, Authentication authentication, Model model) {
@@ -52,6 +55,7 @@ public class JobController {
         User self = getUserFromAuth(authentication);
         model.addAttribute("user", self);
         model.addAttribute("candidate", self.getPerson());
+        model.addAttribute("candidateStudy", new CandidateStudyDTO());
         if(result.hasErrors()){
             model.addAttribute("jobOffcanvas", "");
             model.addAttribute("newJhistory", newJhistory);
@@ -73,6 +77,8 @@ public class JobController {
         model.addAttribute("candidate", self.getPerson());
         jobService.deleteJobHistory(jobHistoryId, self.getPerson());
         model.addAttribute("newJhistory", new JobHistoryDTO());
+        model.addAttribute("candidateStudy", new CandidateStudyDTO());
+        model.addAttribute("studies", studyService.getAllStudies());
         redirectAttributes.addFlashAttribute("successMessage", "Empleo eliminado exitosamente");
         return "redirect:/profile";
     }
