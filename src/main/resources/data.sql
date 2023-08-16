@@ -1,3 +1,12 @@
+-- candidate_related_studies view
+CREATE VIEW candidate_related_studies
+    AS SELECT row_number() over (order by s.certificate_name) id, s.certificate_name, ps.entity_name, ps.start_date, ps.end_date, ps.description, +
+            ps.person_id
+            FROM persons p, persons_has_studies ps, studies s
+            WHERE p.person_id=ps.person_id AND ps.study_id=s.study_id;
+
+-- Insert fake data
+
 -- Places
 INSERT INTO places(name) VALUES ('San José'), ('La Soledad'), ('Datuan'), ('Salvacion'), ('Karmai'), ('Chicago'), ('Moneghetti'), ('Kiruna'), ('Arco de Baúlhe'), ('Jinshi'), ('Kochevo'), ('Радолишта'), ('Druya'), ('Guintubhan'), ('Napnapan'), ('Viking'), ('Itororó'), ('Carolina'), ('Bifeng'), ('Datong'), ('Pār Naogaon'), ('Dalmacio Vélez Sársfield'), ('Dālbandīn'), ('Qiling'), ('Szeged'), ('Błonie'), ('Xiabaishi'), ('Bogdaniec'), ('Tha Ruea'), ('Kitami'), ('Horrom'), ('Litibakul'), ('Lexington'), ('San Ignacio de Tupile'), ('Iznoski'), ('Brie-Comte-Robert'), ('Täby'), ('Abade de Neiva'), ('Yefimovskiy'), ('Landskrona'), ('Övertorneå'), ('Taldykorgan'), ('Makoba'), ('Huanghua'), ('Valsamáta'), ('Yegor’yevsk'), ('Tsuruoka'), ('Pochep'), ('Nangger'), ('Mocupe');
 
@@ -20,3 +29,10 @@ INSERT INTO persons(first_name, last_name, birth_date, phone_number, description
 INSERT INTO job_histories(description, position, init_date, end_date, person_id) VALUES
     ('Pellentesque porta placerat tortor venenatis consectetur. Nam suscipit mauris in aliquet tempor.',
     'Desarrollador Java Junior', now(), now(), 1);
+
+INSERT INTO studies(certificate_name) VALUES
+	('Ingeniero de sistemas'), ('Desarrollador de Software'), ('Abogado'), ('Licenciado en educación básica'), ('Especialista en desarrollo de sistemas');
+
+INSERT INTO persons_has_studies (entity_name, start_date, end_date, description, person_id, study_id) VALUES
+    ('Universidad Prueba Ejemplar - UPE', now(), now(), 'Pellentesque porta placerat tortor venenatis consectetur nam suscipit mauris.',
+    1, 1);

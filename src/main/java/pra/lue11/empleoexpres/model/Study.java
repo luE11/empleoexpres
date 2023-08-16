@@ -28,7 +28,7 @@ public class Study {
     @Column(name = "certificate_name", length = 100, unique = true, nullable = false)
     protected String certificateName;
     @JsonIgnore
-    @OneToMany(mappedBy = "study", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(mappedBy = "study", fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<PersonHasStudy> persons;
 
 }

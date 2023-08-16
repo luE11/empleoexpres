@@ -38,4 +38,19 @@ public class PersonHasStudy {
         this.person = person;
         this.study = study;
     }
+
+    public PersonHasStudy(String entityName, LocalDate startDate, LocalDate endDate, String description) {
+        this.entityName = entityName;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.description = description;
+    }
+
+    public int getStudyId(){
+        return study.getId();
+    }
+
+    public String getCertificateName(){
+        return study.getCertificateName();
+    }
 }

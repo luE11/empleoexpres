@@ -6,10 +6,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import pra.lue11.empleoexpres.dto.CandidateStudyDTO;
 import pra.lue11.empleoexpres.dto.JobHistoryDTO;
 import pra.lue11.empleoexpres.model.User;
 import pra.lue11.empleoexpres.model.enums.UserRole;
 import pra.lue11.empleoexpres.service.PersonService;
+import pra.lue11.empleoexpres.service.StudyService;
 import pra.lue11.empleoexpres.service.UserService;
 
 /**
@@ -23,7 +25,7 @@ public class HomeController {
     private final String HOME_TEMPLATE = "user/home";
 
     private UserService userService;
-    private PersonService personService;
+    private StudyService studyService;
 
     @GetMapping(value = "/home")
     public String showHomeScreen(Authentication authentication, Model model) {
@@ -40,6 +42,8 @@ public class HomeController {
         else{
             model.addAttribute("candidate", self.getPerson());
             model.addAttribute("newJhistory", new JobHistoryDTO());
+            model.addAttribute("candidateStudy", new CandidateStudyDTO());
+            model.addAttribute("studies", studyService.getAllStudies());
         }
         return PROFILE_TEMPLATE;
     }
