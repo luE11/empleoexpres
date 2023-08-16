@@ -63,8 +63,6 @@ public class StudyController {
         return "redirect:/profile";
     }
 
-    // TODO: Delete
-
     private User getUserFromAuth(Authentication authentication){
         return userService.findUserByEmail(authentication.getName()).orElseThrow(() -> new EntityNotFoundException("Logged user not found"));
     }
