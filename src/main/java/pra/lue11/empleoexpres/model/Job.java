@@ -8,10 +8,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import pra.lue11.empleoexpres.model.enums.JobModality;
 import pra.lue11.empleoexpres.model.enums.JobState;
-
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * @author luE11 on 16/08/23
@@ -31,20 +31,18 @@ public class Job {
     @Column(name = "title", nullable = false, length = 100)
     protected String title;
     @Column(name = "due_date", nullable = false)
-    protected LocalDate dueDate;
+    protected LocalDateTime dueDate;
     @Enumerated(value = EnumType.STRING)
     @Column(name = "state", nullable = false)
     protected JobState state;
-    @Column(name = "description", nullable = false, length = 500)
+    @Column(name = "description", nullable = false, length = 1000)
     protected String description;
     @Column(name = "pub_date", nullable = false)
-    protected LocalDate pubDate;
-    @Column(name = "salary_min", nullable = false) // TODO: Componente selector rango de precios?
+    @CreationTimestamp
+    protected LocalDateTime pubDate;
+    @Column(name = "salary", nullable = false) // TODO: Componente selector rango de precios?
     @Min(0)
-    protected Double salaryMin;
-    @Column(name = "salary_max", nullable = false)
-    @Min(0)
-    protected Double salaryMax;
+    protected Double salary;
     @Column(name = "years_of_experience", nullable = false)
     @Min(0)
     protected Double yearsOfExperience;
@@ -64,14 +62,12 @@ public class Job {
     @JoinColumn(name = "publisher_id", referencedColumnName = "publisher_id", nullable = false)
     protected Publisher publisher;
 
-    public Job(String title, LocalDate dueDate, JobState state, String description, LocalDate pubDate, Double salaryMin, Double salaryMax, Double yearsOfExperience, JobModality jobMode) {
+    public Job(String title, LocalDateTime dueDate, JobState state, String description, Double salary, Double yearsOfExperience, JobModality jobMode) {
         this.title = title;
         this.dueDate = dueDate;
         this.state = state;
         this.description = description;
-        this.pubDate = pubDate;
-        this.salaryMin = salaryMin;
-        this.salaryMax = salaryMax;
+        this.salary = salary;
         this.yearsOfExperience = yearsOfExperience;
         this.jobMode = jobMode;
     }
