@@ -1,8 +1,10 @@
 package pra.lue11.empleoexpres.controller;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -15,9 +17,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pra.lue11.empleoexpres.dto.CandidateDTO;
 import pra.lue11.empleoexpres.dto.CandidateStudyDTO;
 import pra.lue11.empleoexpres.dto.JobHistoryDTO;
+import pra.lue11.empleoexpres.model.Job;
 import pra.lue11.empleoexpres.model.JobHistory;
 import pra.lue11.empleoexpres.model.Person;
 import pra.lue11.empleoexpres.model.User;
+import pra.lue11.empleoexpres.model.enums.JobState;
+import pra.lue11.empleoexpres.model.specifications.JobSpecification;
 import pra.lue11.empleoexpres.service.JobService;
 import pra.lue11.empleoexpres.service.StudyService;
 import pra.lue11.empleoexpres.service.UserService;
@@ -31,23 +36,12 @@ import java.util.Optional;
 @Controller
 @AllArgsConstructor
 public class JobController {
-    private static final String JOB_HISTORIES_PAGE = "jobs/job-history.html";
+    private static final String SEARCH_JOB_PAGE = "jobs/search.html";
     private final String PROFILE_TEMPLATE = "user/my-profile";
 
     private UserService userService;
     private JobService jobService;
     private StudyService studyService;
-
-    @GetMapping(value = "/job-history")
-    public String showJobHistory(@RequestParam("email") Optional<String> email, Authentication authentication, Model model) {
-        Person candidate = null;
-        if(email.isPresent())
-            candidate = getPersonFromEmail(email.get());
-        else
-            candidate = getPersonFromAuth(authentication);
-        model.addAttribute("jobHistories", jobService.getJobHistoriesByCandidate(candidate));
-        return JOB_HISTORIES_PAGE;
-    }
 
     @PreAuthorize("hasAnyAuthority('CANDIDATE', 'ADMIN')")
     @PostMapping(value = "/job-history")
@@ -68,7 +62,6 @@ public class JobController {
         return "redirect:/profile";
     }
 
-    // TODO: delete jobhistory
     @PreAuthorize("hasAnyAuthority('CANDIDATE', 'ADMIN')")
     @DeleteMapping(value = "/job-history/{jobHistoryId}")
     public String deleteJobHistory(@PathVariable(name = "jobHistoryId") Integer jobHistoryId, Model model, Authentication authentication, RedirectAttributes redirectAttributes) {
@@ -81,6 +74,19 @@ public class JobController {
         model.addAttribute("studies", studyService.getAllStudies());
         redirectAttributes.addFlashAttribute("successMessage", "Empleo eliminado exitosamente");
         return "redirect:/profile";
+    }
+
+    @RequestMapping(value = "/search", method = { RequestMethod.GET, RequestMethod.POST })
+    public String showSearchJobPage(@RequestParam @Nullable JobSpecification specification,
+                                    @RequestParam(value = "p", required = false) Integer page,
+                                    Model model, Authentication authentication){
+        User self = getUserFromAuth(authentication);
+        JobSpecification jobSpec = specification!=null ? specification : new JobSpecification();
+        Page<Job> jobs = jobService.getAllJobs(page, jobSpec);
+        model.addAttribute("jobList", jobs);
+        model.addAttribute("user", self);
+        model.addAttribute("filter", jobSpec);
+        return SEARCH_JOB_PAGE;
     }
 
     private Person getPersonFromAuth(Authentication authentication){

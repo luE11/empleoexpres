@@ -30,8 +30,6 @@ public class Job {
     protected Integer id;
     @Column(name = "title", nullable = false, length = 100)
     protected String title;
-    @Column(name = "due_date", nullable = false)
-    protected LocalDateTime dueDate;
     @Enumerated(value = EnumType.STRING)
     @Column(name = "state", nullable = false)
     protected JobState state;
@@ -62,9 +60,8 @@ public class Job {
     @JoinColumn(name = "publisher_id", referencedColumnName = "publisher_id", nullable = false)
     protected Publisher publisher;
 
-    public Job(String title, LocalDateTime dueDate, JobState state, String description, Double salary, Double yearsOfExperience, JobModality jobMode) {
+    public Job(String title, JobState state, String description, Double salary, Double yearsOfExperience, JobModality jobMode) {
         this.title = title;
-        this.dueDate = dueDate;
         this.state = state;
         this.description = description;
         this.salary = salary;
