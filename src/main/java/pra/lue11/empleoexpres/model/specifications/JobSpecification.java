@@ -59,7 +59,7 @@ public class JobSpecification implements Specification<Job> {
         if(yearsOfExperience!=null)
             predicates.add(cb.greaterThanOrEqualTo(root.get("yearsOfExperience"), yearsOfExperience));
         if(jobMode!=null)
-            predicates.add(cb.equal(root.<JobModality>get("jobMode"), JobModality.valueOf(jobMode)));
+            predicates.add(cb.equal(root.get("jobMode"), JobModality.valueOf(jobMode)));
         if(locationId!=null)
             predicates.add(cb.equal(root.get("location").get("id"), locationId));
         if(studyId!=null)

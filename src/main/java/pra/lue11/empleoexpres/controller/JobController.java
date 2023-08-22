@@ -82,8 +82,7 @@ public class JobController {
                                     Model model, Authentication authentication){
         User self = getUserFromAuth(authentication);
         JobSpecification jobSpec = specification!=null ? specification : new JobSpecification();
-        Page<Job> jobs = jobService.getAllJobs(page, jobSpec);
-        model.addAttribute("jobList", jobs);
+        model.addAttribute("jobList", jobService.getAllJobs(page, jobSpec));
         model.addAttribute("user", self);
         model.addAttribute("filter", jobSpec);
         return SEARCH_JOB_PAGE;
@@ -91,11 +90,6 @@ public class JobController {
 
     private Person getPersonFromAuth(Authentication authentication){
         User user = userService.findUserByEmail(authentication.getName()).orElseThrow(() -> new EntityNotFoundException("Logged user not found"));
-        return user.getPerson();
-    }
-
-    private Person getPersonFromEmail(String email){
-        User user = userService.findUserByEmail(email).orElseThrow(() -> new EntityNotFoundException("Logged user not found"));
         return user.getPerson();
     }
 

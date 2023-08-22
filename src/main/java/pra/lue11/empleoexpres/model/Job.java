@@ -11,7 +11,11 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import pra.lue11.empleoexpres.model.enums.JobModality;
 import pra.lue11.empleoexpres.model.enums.JobState;
+
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 
 /**
  * @author luE11 on 16/08/23
@@ -67,5 +71,30 @@ public class Job {
         this.salary = salary;
         this.yearsOfExperience = yearsOfExperience;
         this.jobMode = jobMode;
+    }
+
+    public boolean isAllJobMode(){
+        return jobMode.compareTo(JobModality.ALL)==0;
+    }
+
+    public String getTruncateDescription(int length){
+        return description.length()<=length ? description : description.substring(0, length)+"...";
+    }
+
+    public String getPubDateTime(){
+        Period p = Period.between(pubDate.toLocalDate(), LocalDate.now());
+        Duration d = Duration.between(LocalDateTime.now(), pubDate);
+        StringBuilder dateDiff = new StringBuilder();
+        if(p.getYears()>0)
+            dateDiff.append("Hace ").append(p.getYears()).append(" años");
+        else if(p.getMonths()>0)
+            dateDiff.append("Hace ").append(p.getMonths()).append(" meses");
+        else if(p.getDays()>0)
+            dateDiff.append("Hace ").append(p.getDays()).append(" días");
+        else if(d.getSeconds()>=60)
+            dateDiff.append("Hace ").append(Math.round((float) d.getSeconds() / 60)).append(" minutos");
+        else
+            dateDiff.append("Hace ").append(d.getSeconds()).append(" segundos");
+        return dateDiff.toString();
     }
 }

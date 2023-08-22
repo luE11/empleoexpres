@@ -24,7 +24,7 @@ import java.util.List;
 @AllArgsConstructor
 public class JobService {
 
-    private static final int PAGE_SIZE = 15;
+    private static final int PAGE_SIZE = 10;
 
     private JobHistoryRepository jobHistoryRepository;
     private JobRepository jobRepository;
