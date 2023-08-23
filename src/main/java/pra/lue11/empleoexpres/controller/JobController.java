@@ -4,6 +4,7 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -12,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pra.lue11.empleoexpres.dto.CandidateDTO;
@@ -77,10 +79,13 @@ public class JobController {
     }
 
     @RequestMapping(value = "/search", method = { RequestMethod.GET, RequestMethod.POST })
-    public String showSearchJobPage(@RequestParam @Nullable JobSpecification specification,
+    public String showSearchJobPage(@ModelAttribute(name = "filter") @Nullable JobSpecification specification,
                                     @RequestParam(value = "p", required = false) Integer page,
                                     Model model, Authentication authentication){
         User self = getUserFromAuth(authentication);
+        System.err.println("Entrando...");
+        if(specification!=null)
+            System.out.println(specification.getTitle());
         JobSpecification jobSpec = specification!=null ? specification : new JobSpecification();
         model.addAttribute("jobList", jobService.getAllJobs(page, jobSpec));
         model.addAttribute("user", self);
@@ -95,6 +100,11 @@ public class JobController {
 
     private User getUserFromAuth(Authentication authentication){
         return userService.findUserByEmail(authentication.getName()).orElseThrow(() -> new EntityNotFoundException("Logged user not found"));
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }
 
 }

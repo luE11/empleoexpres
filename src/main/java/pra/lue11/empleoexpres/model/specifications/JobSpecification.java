@@ -41,7 +41,7 @@ public class JobSpecification implements Specification<Job> {
     public Predicate toPredicate(Root<Job> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
         List<Predicate> predicates = new ArrayList<>();
         if(title!=null)
-            predicates.add(cb.like(root.get("title"), title));
+            predicates.add(cb.like(root.get("title"), "%"+title+"%"));
         if(state!=null)
             predicates.add(cb.equal(root.get("state"), JobState.valueOf(state)));
         if(daysAgo!=null){

@@ -3,8 +3,8 @@ package pra.lue11.empleoexpres.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import pra.lue11.empleoexpres.dto.JobHistoryDTO;
@@ -25,6 +25,7 @@ import java.util.List;
 public class JobService {
 
     private static final int PAGE_SIZE = 10;
+    private static final String JOB_PUB_DATE_NAME = "pubDate";
 
     private JobHistoryRepository jobHistoryRepository;
     private JobRepository jobRepository;
@@ -49,7 +50,9 @@ public class JobService {
 
     public Page<Job> getAllJobs(Integer page, JobSpecification spec){
         int currPage = page != null ? page : 0;
-        return jobRepository.findAll(spec, Pageable.ofSize(PAGE_SIZE).withPage(currPage));
+        return jobRepository.findAll(spec,
+                PageRequest.ofSize(PAGE_SIZE).withPage(currPage)
+                        .withSort(Sort.by(JOB_PUB_DATE_NAME).descending()));
     }
 
 }

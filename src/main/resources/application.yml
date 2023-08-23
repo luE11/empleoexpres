@@ -22,12 +22,12 @@ spring:
   devtools:
     restart:
       enabled: true
-#logging:
-#  level:
-#    org:
-#      hibernate:
-#        type: trace
-#        stat: debug
-#        orm:
-#          jdbc:
-#            bind: trace
+logging:
+  level:
+    org:
+      hibernate:
+        type: trace
+        stat: debug
+        orm:
+          jdbc:
+            bind: trace

@@ -83,7 +83,7 @@ public class Job {
 
     public String getPubDateTime(){
         Period p = Period.between(pubDate.toLocalDate(), LocalDate.now());
-        Duration d = Duration.between(LocalDateTime.now(), pubDate);
+        Duration d = Duration.between(pubDate, LocalDateTime.now());
         StringBuilder dateDiff = new StringBuilder();
         if(p.getYears()>0)
             dateDiff.append("Hace ").append(p.getYears()).append(" años");
@@ -92,7 +92,10 @@ public class Job {
         else if(p.getDays()>0)
             dateDiff.append("Hace ").append(p.getDays()).append(" días");
         else if(d.getSeconds()>=60)
-            dateDiff.append("Hace ").append(Math.round((float) d.getSeconds() / 60)).append(" minutos");
+            if(d.getSeconds()>=(60*60))
+                dateDiff.append("Hace ").append(Math.round((float) d.getSeconds() / (60*60))).append(" horas");
+            else
+                dateDiff.append("Hace ").append(Math.round((float) d.getSeconds() / 60)).append(" minutos");
         else
             dateDiff.append("Hace ").append(d.getSeconds()).append(" segundos");
         return dateDiff.toString();
