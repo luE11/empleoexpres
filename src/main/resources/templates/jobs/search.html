@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>EmpleoExprés | Empleos</title>
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}"/>
+    <link th:rel="stylesheet" th:href="@{/css/styles.css}"/>
+    <link th:rel="stylesheet" th:href="@{/css/bootstrap-select.min.css}" />
+</head>
+<body>
+    <nav th:replace="~{fragments/loggedin.html :: navbar }"></nav>
+    <div class="m-2">
+        <div class="row">
+            <div class="col-3">
+                <div class="flex-shrink-0 p-3">
+                    <form method="POST" th:action="@{/search}" th:object="${filter}">
+                        <h2 class="text-center my-3">Filtrado de ofertas</h2>
+                        <p class="fw-lighter">Filtra para obtener ofertas más personalizadas.</p>
+                        <div class="form-floating">
+                            <input id="title" th:field="*{title}" class="form-control" placeholder="Título de la oferta" type="text"/>
+                            <label for="title">Título de la oferta</label>
+                        </div>
+                        <ul class="list-unstyled ps-0">
+                            <li class="mb-1">
+                                <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
+                                    <i class="bi bi-plus-circle-fill me-2 text-info"></i>
+                                    Estado de la oferta
+                                </button>
+                                <div class="collapse ps-4" id="home-collapse">
+                                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="allstate_radio" th:field="*{state}" value="">
+                                            <label class="form-check-label" for="allstate_radio">Todos</label>
+                                        </div>
+                                        <div class="form-check" th:each="jobstate : ${T(pra.lue11.empleoexpres.model.enums.JobState).values()}">
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault" th:id="${jobstate+'_radio'}" th:field="*{state}" th:value="${jobstate}">
+                                            <label class="form-check-label" th:for="${jobstate+'_radio'}" th:text="${jobstate.getState()}"></label>
+                                        </div>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li class="mb-1">
+                                <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false" type="button">
+                                    <i class="bi bi-plus-circle-fill me-2 text-info"></i>
+                                    Fecha
+                                </button>
+                                <div class="collapse ps-4" id="dashboard-collapse">
+                                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="alldate_radio" th:field="*{daysAgo}" value="0">
+                                            <label class="form-check-label" for="alldate_radio">Todos</label>
+                                        </div>
+                                        <div class="form-check" th:each="dateOption : ${filter.getDaysAgoOptions()}">
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault" th:id="${dateOption.value+'_radio'}" th:field="*{daysAgo}" th:value="${dateOption.value}">
+                                            <label class="form-check-label" th:for="${dateOption.value+'_radio'}" th:text="${dateOption.key}"></label>
+                                        </div>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li class="mb-1">
+                                <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false" type="button">
+                                    <i class="bi bi-plus-circle-fill me-2 text-info"></i>
+                                    Salario
+                                </button>
+                                <div class="collapse ps-4" id="orders-collapse" th:classappend="${#fields.hasErrors('salaryMax')} ? 'show':''">
+                                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text">$</span>
+                                            <div class="form-floating">
+                                                <input id="min_salary" name="minSalary" type="number" class="form-control" placeholder="Salario mínimo"
+                                                       th:field="*{salaryMin}" th:value="${salaryMin}"/>
+                                                <label for="min_salary">Salario mínimo</label>
+                                            </div>
+                                            <span class="input-group-text">COP</span>
+                                        </div>
+                                        <div class="input-group">
+                                            <span class="input-group-text">$</span>
+                                            <div class="form-floating" th:classappend="${#fields.hasErrors('salaryMax')} ? 'is-invalid':''">
+                                                <input id="max_salary" name="maxSalary" type="number" class="form-control" placeholder="Salario máximo"
+                                                       th:field="*{salaryMax}" th:value="${salaryMax}" th:classappend="${#fields.hasErrors('salaryMax')} ? 'is-invalid':''" />
+                                                <label for="max_salary">Salario máximo</label>
+                                            </div>
+                                            <span class="input-group-text">COP</span>
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('salaryMax')}" th:errors="*{salaryMax}"></div>
+                                        </div>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li class="mb-1">
+                                <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#experience-collapse" aria-expanded="false" type="button">
+                                    <i class="bi bi-plus-circle-fill me-2 text-info"></i>
+                                    Experiencia
+                                </button>
+                                <div class="collapse ps-4" id="experience-collapse">
+                                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="allexp_radio" th:field="*{yearsOfExperience}" value="-1">
+                                            <label class="form-check-label" for="allexp_radio">Todos</label>
+                                        </div>
+                                        <div class="form-check" th:each="expOption : ${filter.getExperienceOptions()}">
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault" th:id="${expOption.value+'_radio'}" th:field="*{yearsOfExperience}" th:value="${expOption.value}">
+                                            <label class="form-check-label" th:for="${expOption.value+'_radio'}" th:text="${expOption.key}"></label>
+                                        </div>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li class="mb-1">
+                                <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false" type="button">
+                                    <i class="bi bi-plus-circle-fill me-2 text-info"></i>
+                                    Modalidad
+                                </button>
+                                <div class="collapse ps-4" id="account-collapse">
+                                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="deselectmode_radio" th:field="*{jobMode}" value="">
+                                            <label class="form-check-label" for="deselectmode_radio">Deseleccionar</label>
+                                        </div>
+                                        <div class="form-check" th:each="jobmode : ${T(pra.lue11.empleoexpres.model.enums.JobModality).values()}">
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault" th:id="${jobmode+'_radio'}" th:field="*{jobMode}" th:value="${jobmode}">
+                                            <label class="form-check-label" th:for="${jobmode+'_radio'}" th:text="${jobmode.getModality()}"></label>
+                                        </div>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li class="border-top my-3"></li>
+                            <li class="mb-1">
+                                <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#parameters-collapse" aria-expanded="false" type="button">
+                                    <i class="bi bi-plus-circle-fill me-2 text-info"></i>
+                                    Ubicación, profesión y empresa
+                                </button>
+                                <div class="collapse ps-4" id="parameters-collapse">
+                                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                        <div class="row">
+                                            <div class="col-md px-0">
+                                                <label class="py-2">Ubicación</label>
+                                            </div>
+                                            <div class="col-md-9 px-0">
+                                                <div class="form-group">
+                                                    <select th:field="*{locationId}" th:value="${locationId}" class="selectpicker form-control" title="Selecciona una ciudad" data-live-search="true">
+                                                        <option value="0">Todos</option>
+                                                        <option th:each="place:${places}" th:value="${place.getId()}" th:text="${place.getName()}"></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md px-0">
+                                                <label class="py-2">Profesión</label>
+                                            </div>
+                                            <div class="col-md-9 px-0">
+                                                <div class="form-group">
+                                                    <select th:field="*{studyId}" th:value="${studyId}" class="selectpicker form-control" title="Selecciona una profesión" data-live-search="true">
+                                                        <option value="0">Todos</option>
+                                                        <option th:each="profession:${professions}" th:value="${profession.getId()}" th:text="${profession.getCertificateName()}"></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md px-0">
+                                                <label class="py-2">Empresa</label>
+                                            </div>
+                                            <div class="col-md-9 px-0">
+                                                <div class="form-group">
+                                                    <select th:field="*{publisherId}" th:value="${publisherId}" class="selectpicker form-control" title="Selecciona una empresa" data-live-search="true">
+                                                        <option value="0">Todos</option>
+                                                        <option th:each="publisher:${publishers}" th:value="${publisher.getId()}" th:text="${publisher.getCompanyName()}"></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" th:field="*{publisherExclude}"
+                                                   th:value="${publisherExclude}" id="includePublisher">
+                                            <label class="form-check-label" for="includePublisher">
+                                                Excluir empresa seleccionada
+                                            </label>
+                                        </div>
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <button class="btn btn-primary" type="submit">Filtrar</button>
+                        <a class="btn btn-secondary" th:href="@{/search(p=${jobList.getNumber()},clearFilter=${true})}">Limpiar filtros</a>
+                    </form>
+                </div>
+            </div>
+            <div class="col-9 p-4 ps-1">
+                <h2 class="text-center mb-3">Búsqueda de empleo</h2>
+                <div class="row row-cols-1 row-cols-md-2 g-3">
+                    <div class="col" th:each="job : ${jobList.content}">
+                        <div class="card h-100" th:with="publisher=${job.getPublisher()}">
+                            <div class="card-header" sec:authorize="hasAnyAuthority('PUBLISHER', 'ADMIN')">
+                                <!-- Edit, delete job for publishers and admins -->
+                            </div>
+                            <div class="row g-0 ps-1">
+                                <div class="col-md-2 d-flex align-items-center justify-content-center">
+                                    <img th:src="${ (publisher.getLogoUrl()!=null && publisher.isVisible()) ? publisher.getLogoUrl() : '/images/default_user_photo.svg'}"
+                                         class="img-fluid rounded-start w-100" alt="logo">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body p-2">
+                                        <h5 class="card-title" th:text="${job.title}"></h5>
+                                        <p class="card-text">
+                                            <small class="text-body-secondary" th:text="${publisher.isVisible() ? publisher.getCompanyName() : 'Empresa confidencial'}"></small>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 pt-2 pe-2 text-end">
+                                    <span class="badge text-bg-success" th:unless="${job.isAllJobMode()}"
+                                          th:text="${job.getJobMode().getModality()}"></span>
+                                    <span class="badge text-bg-primary" th:text="${job.getState().getState()}"></span>
+                                </div>
+                            </div>
+                            <div class="h-100 p-1">
+                                <div class="row" id="job-icon-details">
+                                    <div class="col">
+                                        <p><i class="bi bi-currency-dollar"></i> <span th:text="${#numbers.formatInteger(job.getSalary(),0,'POINT')}"></span> COP</p>
+                                    </div>
+                                    <div class="col">
+                                        <p><i class="bi bi-stopwatch-fill"></i> <span th:text="${job.getYearsOfExperience() == 0 ? '0' : job.getYearsOfExperience()}"></span> años</p>
+                                    </div>
+                                    <div class="col" th:if="${job.getLocation()!=null}">
+                                        <p><i class="bi bi-geo-alt-fill"></i> <span th:text="${job.getLocation().getName()}"></span></p>
+                                    </div>
+                                </div>
+                                <div class="mx-2">
+                                    <p><strong>Profesión relacionada:</strong> <span th:text="${job.getProfession().getCertificateName()}"></span></p>
+                                    <p class="card-text" th:text="${job.getTruncateDescription(200)}"></p>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <small class="text-body-secondary" th:text="${job.getPubDateTime()}"></small>
+                                <a th:href="@{/job/{id}(id=${job.getId()})}" class="btn btn-outline-info float-end">Consultar oferta</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-center my-2" th:if="${jobList.getTotalElements()>0}">
+                    <span th:text="${jobList.getTotalElements()}"></span> resultados de búsqueda.
+                </p>
+                <p class="text-center mt-5 pt-5" th:unless="${jobList.getTotalElements()>0}">
+                    No se han encontrado resultados. Prueba a modificar los parámetrosde búsqueda ingresados.
+                </p>
+                <nav th:if="${jobList.getTotalElements()>0}">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${jobList.getNumber()==0} ? 'disabled' : ''">
+                            <a class="page-link" th:href="@{/search(p=${jobList.getNumber()-1})}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">Previo</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:each="i: ${#numbers.sequence(-2, 2)}"
+                            th:unless="${(jobList.getNumber()+i) < 0 || (jobList.getNumber()+i) > jobList.getTotalPages()-1}"
+                            th:classappend="${i==0 ? 'active': ''}">
+                            <a class="page-link" th:href="@{/search(p=${jobList.getNumber()+i})}"
+                                th:text="${jobList.getNumber()+i+1}"></a>
+                        </li>
+                        <li class="page-item" th:classappend="${jobList.getNumber()==jobList.getTotalPages()-1} ? 'disabled' : ''">
+                            <a class="page-link" th:href="@{/search(p=${jobList.getNumber()+1})}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">Siguiente</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <script th:src="@{/webjars/jquery/3.6.1/jquery.min.js}"></script>
+    <script th:src="@{/webjars/popper.js/2.11.7/umd/popper.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/bootstrap-select.min.js}"></script>
+</body>
+</html>

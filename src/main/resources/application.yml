@@ -13,10 +13,6 @@ spring:
     hibernate:
       ddl-auto: update
     database: mysql
-  data:
-    web:
-      pageable:
-        one-indexed-parameters: true
   config:
     import: optional:file:.env[.properties]
   sql:
@@ -26,4 +22,16 @@ spring:
   devtools:
     restart:
       enabled: true
-
+server:
+  servlet:
+    session:
+      timeout: 1h
+#logging:
+#  level:
+#    org:
+#      hibernate:
+#        stat: debug
+#        type: trace
+#        orm:
+#          jdbc:
+#            bind: trace

@@ -1,29 +1,26 @@
 package pra.lue11.empleoexpres.controller;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import pra.lue11.empleoexpres.dto.CandidateDTO;
 import pra.lue11.empleoexpres.dto.CandidateStudyDTO;
 import pra.lue11.empleoexpres.dto.JobHistoryDTO;
-import pra.lue11.empleoexpres.model.JobHistory;
-import pra.lue11.empleoexpres.model.Person;
-import pra.lue11.empleoexpres.model.User;
-import pra.lue11.empleoexpres.service.JobService;
-import pra.lue11.empleoexpres.service.StudyService;
-import pra.lue11.empleoexpres.service.UserService;
+import pra.lue11.empleoexpres.model.*;
+import pra.lue11.empleoexpres.model.specifications.JobSpecification;
+import pra.lue11.empleoexpres.service.*;
 
-import java.io.IOException;
-import java.util.Optional;
+import java.util.List;
 
 /**
  * @author luE11 on 1/08/23
@@ -31,23 +28,14 @@ import java.util.Optional;
 @Controller
 @AllArgsConstructor
 public class JobController {
-    private static final String JOB_HISTORIES_PAGE = "jobs/job-history.html";
+    private static final String SEARCH_JOB_PAGE = "jobs/search.html";
     private final String PROFILE_TEMPLATE = "user/my-profile";
 
     private UserService userService;
     private JobService jobService;
     private StudyService studyService;
-
-    @GetMapping(value = "/job-history")
-    public String showJobHistory(@RequestParam("email") Optional<String> email, Authentication authentication, Model model) {
-        Person candidate = null;
-        if(email.isPresent())
-            candidate = getPersonFromEmail(email.get());
-        else
-            candidate = getPersonFromAuth(authentication);
-        model.addAttribute("jobHistories", jobService.getJobHistoriesByCandidate(candidate));
-        return JOB_HISTORIES_PAGE;
-    }
+    private PlaceService placeService;
+    private PublisherService publisherService;
 
     @PreAuthorize("hasAnyAuthority('CANDIDATE', 'ADMIN')")
     @PostMapping(value = "/job-history")
@@ -68,7 +56,6 @@ public class JobController {
         return "redirect:/profile";
     }
 
-    // TODO: delete jobhistory
     @PreAuthorize("hasAnyAuthority('CANDIDATE', 'ADMIN')")
     @DeleteMapping(value = "/job-history/{jobHistoryId}")
     public String deleteJobHistory(@PathVariable(name = "jobHistoryId") Integer jobHistoryId, Model model, Authentication authentication, RedirectAttributes redirectAttributes) {
@@ -83,18 +70,57 @@ public class JobController {
         return "redirect:/profile";
     }
 
+    @RequestMapping(value = "/search", method = { RequestMethod.GET, RequestMethod.POST })
+    public String showSearchJobPage(@ModelAttribute(name = "filter") @Nullable JobSpecification specification,
+                                    @RequestParam(value = "p", required = false) Integer page,
+                                    @RequestParam(value = "clearFilter", required = false) Boolean clearFilter,
+                                    Authentication authentication, Model model, HttpSession session, BindingResult result){
+        if(authentication==null)
+            return "redirect:/home";
+        User self = getUserFromAuth(authentication);
+        JobSpecification jobSpec = null;
+        if(specification!=null && !specification.isSalaryValid()){
+            result.rejectValue("salaryMax", "", "El salario máximo no puede ser menor al mínimo especificado.");
+            jobSpec = specification;
+            jobSpec.resetSalary();
+        }else {
+            if(clearFilter!=null && clearFilter)
+                session.removeAttribute("lastJobFilter");
+            if(specification!=null && specification.isEmpty()
+                    && session.getAttribute("lastJobFilter")!=null){
+                jobSpec = (JobSpecification) session.getAttribute("lastJobFilter");
+            }else {
+                jobSpec = !specification.isEmpty() ? specification : new JobSpecification();
+                session.setAttribute("lastJobFilter", jobSpec);
+            }
+        }
+        model.addAttribute("jobList", jobService.getAllJobs(page, jobSpec));
+        model.addAttribute("user", self);
+        model.addAttribute("filter", jobSpec);
+        model.addAttribute("places", getAllPlaces());
+        model.addAttribute("professions", getAllProfessions());
+        model.addAttribute("publishers", getAllPublishers());
+        return SEARCH_JOB_PAGE;
+    }
+
     private Person getPersonFromAuth(Authentication authentication){
         User user = userService.findUserByEmail(authentication.getName()).orElseThrow(() -> new EntityNotFoundException("Logged user not found"));
         return user.getPerson();
     }
 
-    private Person getPersonFromEmail(String email){
-        User user = userService.findUserByEmail(email).orElseThrow(() -> new EntityNotFoundException("Logged user not found"));
-        return user.getPerson();
-    }
-
-    private User getUserFromAuth(Authentication authentication){
+    private User getUserFromAuth(Authentication authentication) {
         return userService.findUserByEmail(authentication.getName()).orElseThrow(() -> new EntityNotFoundException("Logged user not found"));
     }
 
+    private List<Place> getAllPlaces(){
+        return placeService.getAllPlaces();
+    }
+
+    private List<Study> getAllProfessions(){
+        return studyService.getAllStudies();
+    }
+
+    private List<Publisher> getAllPublishers(){
+        return publisherService.getAllPublishers();
+    }
 }

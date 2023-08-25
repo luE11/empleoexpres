@@ -4,7 +4,7 @@ package pra.lue11.empleoexpres.model.enums;
  * @author luE11 on 17/07/23
  */
 public enum JobModality {
-    ALL("Todos"), FACETOFACE("Presencial"), REMOTE("Remoto");
+    HYBRID("Híbrido"), FACETOFACE("Presencial"), REMOTE("Remoto"), ALL("Todos");
 
     final String modality;
 

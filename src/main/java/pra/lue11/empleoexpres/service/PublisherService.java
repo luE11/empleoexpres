@@ -10,6 +10,7 @@ import pra.lue11.empleoexpres.repository.PublisherRepository;
 import pra.lue11.empleoexpres.utils.FileUploadUtil;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author luE11 on 21/07/23
@@ -31,6 +32,10 @@ public class PublisherService {
         if(publisherDTO.getLogo()!=null && !publisherDTO.getLogo().isEmpty())
             publisher.setLogoUrl(uploadFile("logo_"+ publisher.getCompanyName(), publisherDTO.getLogo()));
         return publisherRepository.save(publisher);
+    }
+
+    public List<Publisher> getAllPublishers(){
+        return publisherRepository.findAll();
     }
 
     private String uploadFile(String name, MultipartFile file) throws IOException {
