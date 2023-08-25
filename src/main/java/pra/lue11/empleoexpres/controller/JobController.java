@@ -2,35 +2,25 @@ package pra.lue11.empleoexpres.controller;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
-import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import pra.lue11.empleoexpres.dto.CandidateDTO;
 import pra.lue11.empleoexpres.dto.CandidateStudyDTO;
 import pra.lue11.empleoexpres.dto.JobHistoryDTO;
-import pra.lue11.empleoexpres.model.Job;
-import pra.lue11.empleoexpres.model.JobHistory;
-import pra.lue11.empleoexpres.model.Person;
-import pra.lue11.empleoexpres.model.User;
-import pra.lue11.empleoexpres.model.enums.JobState;
+import pra.lue11.empleoexpres.model.*;
 import pra.lue11.empleoexpres.model.specifications.JobSpecification;
-import pra.lue11.empleoexpres.service.JobService;
-import pra.lue11.empleoexpres.service.StudyService;
-import pra.lue11.empleoexpres.service.UserService;
+import pra.lue11.empleoexpres.service.*;
 
-import java.io.IOException;
-import java.util.Optional;
+import java.util.List;
 
 /**
  * @author luE11 on 1/08/23
@@ -44,6 +34,8 @@ public class JobController {
     private UserService userService;
     private JobService jobService;
     private StudyService studyService;
+    private PlaceService placeService;
+    private PublisherService publisherService;
 
     @PreAuthorize("hasAnyAuthority('CANDIDATE', 'ADMIN')")
     @PostMapping(value = "/job-history")
@@ -81,15 +73,33 @@ public class JobController {
     @RequestMapping(value = "/search", method = { RequestMethod.GET, RequestMethod.POST })
     public String showSearchJobPage(@ModelAttribute(name = "filter") @Nullable JobSpecification specification,
                                     @RequestParam(value = "p", required = false) Integer page,
-                                    Model model, Authentication authentication){
+                                    @RequestParam(value = "clearFilter", required = false) Boolean clearFilter,
+                                    Authentication authentication, Model model, HttpSession session, BindingResult result){
+        if(authentication==null)
+            return "redirect:/home";
         User self = getUserFromAuth(authentication);
-        System.err.println("Entrando...");
-        if(specification!=null)
-            System.out.println(specification.getTitle());
-        JobSpecification jobSpec = specification!=null ? specification : new JobSpecification();
+        JobSpecification jobSpec = null;
+        if(specification!=null && !specification.isSalaryValid()){
+            result.rejectValue("salaryMax", "", "El salario máximo no puede ser menor al mínimo especificado.");
+            jobSpec = specification;
+            jobSpec.resetSalary();
+        }else {
+            if(clearFilter!=null && clearFilter)
+                session.removeAttribute("lastJobFilter");
+            if(specification!=null && specification.isEmpty()
+                    && session.getAttribute("lastJobFilter")!=null){
+                jobSpec = (JobSpecification) session.getAttribute("lastJobFilter");
+            }else {
+                jobSpec = !specification.isEmpty() ? specification : new JobSpecification();
+                session.setAttribute("lastJobFilter", jobSpec);
+            }
+        }
         model.addAttribute("jobList", jobService.getAllJobs(page, jobSpec));
         model.addAttribute("user", self);
         model.addAttribute("filter", jobSpec);
+        model.addAttribute("places", getAllPlaces());
+        model.addAttribute("professions", getAllProfessions());
+        model.addAttribute("publishers", getAllPublishers());
         return SEARCH_JOB_PAGE;
     }
 
@@ -98,13 +108,19 @@ public class JobController {
         return user.getPerson();
     }
 
-    private User getUserFromAuth(Authentication authentication){
+    private User getUserFromAuth(Authentication authentication) {
         return userService.findUserByEmail(authentication.getName()).orElseThrow(() -> new EntityNotFoundException("Logged user not found"));
     }
 
-    @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
+    private List<Place> getAllPlaces(){
+        return placeService.getAllPlaces();
     }
 
+    private List<Study> getAllProfessions(){
+        return studyService.getAllStudies();
+    }
+
+    private List<Publisher> getAllPublishers(){
+        return publisherService.getAllPublishers();
+    }
 }

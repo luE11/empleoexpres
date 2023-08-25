@@ -15,72 +15,179 @@
                 <div class="flex-shrink-0 p-3">
                     <form method="POST" th:action="@{/search}" th:object="${filter}">
                         <h2 class="text-center my-3">Filtrado de ofertas</h2>
+                        <p class="fw-lighter">Filtra para obtener ofertas más personalizadas.</p>
                         <div class="form-floating">
                             <input id="title" th:field="*{title}" class="form-control" placeholder="Título de la oferta" type="text"/>
                             <label for="title">Título de la oferta</label>
                         </div>
                         <ul class="list-unstyled ps-0">
                             <li class="mb-1">
-                                <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
-                                    Home
+                                <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
+                                    <i class="bi bi-plus-circle-fill me-2 text-info"></i>
+                                    Estado de la oferta
                                 </button>
-                                <div class="collapse show" id="home-collapse">
+                                <div class="collapse ps-4" id="home-collapse">
                                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                        <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Overview</a></li>
-                                        <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Updates</a></li>
-                                        <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Reports</a></li>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="allstate_radio" th:field="*{state}" value="">
+                                            <label class="form-check-label" for="allstate_radio">Todos</label>
+                                        </div>
+                                        <div class="form-check" th:each="jobstate : ${T(pra.lue11.empleoexpres.model.enums.JobState).values()}">
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault" th:id="${jobstate+'_radio'}" th:field="*{state}" th:value="${jobstate}">
+                                            <label class="form-check-label" th:for="${jobstate+'_radio'}" th:text="${jobstate.getState()}"></label>
+                                        </div>
                                     </ul>
                                 </div>
                             </li>
                             <li class="mb-1">
-                                <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
-                                    Dashboard
+                                <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false" type="button">
+                                    <i class="bi bi-plus-circle-fill me-2 text-info"></i>
+                                    Fecha
                                 </button>
-                                <div class="collapse" id="dashboard-collapse">
+                                <div class="collapse ps-4" id="dashboard-collapse">
                                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                        <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Overview</a></li>
-                                        <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Weekly</a></li>
-                                        <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Monthly</a></li>
-                                        <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Annually</a></li>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="alldate_radio" th:field="*{daysAgo}" value="0">
+                                            <label class="form-check-label" for="alldate_radio">Todos</label>
+                                        </div>
+                                        <div class="form-check" th:each="dateOption : ${filter.getDaysAgoOptions()}">
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault" th:id="${dateOption.value+'_radio'}" th:field="*{daysAgo}" th:value="${dateOption.value}">
+                                            <label class="form-check-label" th:for="${dateOption.value+'_radio'}" th:text="${dateOption.key}"></label>
+                                        </div>
                                     </ul>
                                 </div>
                             </li>
                             <li class="mb-1">
-                                <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
-                                    Orders
+                                <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false" type="button">
+                                    <i class="bi bi-plus-circle-fill me-2 text-info"></i>
+                                    Salario
                                 </button>
-                                <div class="collapse" id="orders-collapse">
+                                <div class="collapse ps-4" id="orders-collapse" th:classappend="${#fields.hasErrors('salaryMax')} ? 'show':''">
                                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                        <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">New</a></li>
-                                        <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Processed</a></li>
-                                        <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Shipped</a></li>
-                                        <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Returned</a></li>
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text">$</span>
+                                            <div class="form-floating">
+                                                <input id="min_salary" name="minSalary" type="number" class="form-control" placeholder="Salario mínimo"
+                                                       th:field="*{salaryMin}" th:value="${salaryMin}"/>
+                                                <label for="min_salary">Salario mínimo</label>
+                                            </div>
+                                            <span class="input-group-text">COP</span>
+                                        </div>
+                                        <div class="input-group">
+                                            <span class="input-group-text">$</span>
+                                            <div class="form-floating" th:classappend="${#fields.hasErrors('salaryMax')} ? 'is-invalid':''">
+                                                <input id="max_salary" name="maxSalary" type="number" class="form-control" placeholder="Salario máximo"
+                                                       th:field="*{salaryMax}" th:value="${salaryMax}" th:classappend="${#fields.hasErrors('salaryMax')} ? 'is-invalid':''" />
+                                                <label for="max_salary">Salario máximo</label>
+                                            </div>
+                                            <span class="input-group-text">COP</span>
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('salaryMax')}" th:errors="*{salaryMax}"></div>
+                                        </div>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li class="mb-1">
+                                <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#experience-collapse" aria-expanded="false" type="button">
+                                    <i class="bi bi-plus-circle-fill me-2 text-info"></i>
+                                    Experiencia
+                                </button>
+                                <div class="collapse ps-4" id="experience-collapse">
+                                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="allexp_radio" th:field="*{yearsOfExperience}" value="-1">
+                                            <label class="form-check-label" for="allexp_radio">Todos</label>
+                                        </div>
+                                        <div class="form-check" th:each="expOption : ${filter.getExperienceOptions()}">
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault" th:id="${expOption.value+'_radio'}" th:field="*{yearsOfExperience}" th:value="${expOption.value}">
+                                            <label class="form-check-label" th:for="${expOption.value+'_radio'}" th:text="${expOption.key}"></label>
+                                        </div>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li class="mb-1">
+                                <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false" type="button">
+                                    <i class="bi bi-plus-circle-fill me-2 text-info"></i>
+                                    Modalidad
+                                </button>
+                                <div class="collapse ps-4" id="account-collapse">
+                                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="deselectmode_radio" th:field="*{jobMode}" value="">
+                                            <label class="form-check-label" for="deselectmode_radio">Deseleccionar</label>
+                                        </div>
+                                        <div class="form-check" th:each="jobmode : ${T(pra.lue11.empleoexpres.model.enums.JobModality).values()}">
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault" th:id="${jobmode+'_radio'}" th:field="*{jobMode}" th:value="${jobmode}">
+                                            <label class="form-check-label" th:for="${jobmode+'_radio'}" th:text="${jobmode.getModality()}"></label>
+                                        </div>
                                     </ul>
                                 </div>
                             </li>
                             <li class="border-top my-3"></li>
                             <li class="mb-1">
-                                <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
-                                    Account
+                                <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#parameters-collapse" aria-expanded="false" type="button">
+                                    <i class="bi bi-plus-circle-fill me-2 text-info"></i>
+                                    Ubicación, profesión y empresa
                                 </button>
-                                <div class="collapse" id="account-collapse">
+                                <div class="collapse ps-4" id="parameters-collapse">
                                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                        <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">New...</a></li>
-                                        <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Profile</a></li>
-                                        <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Settings</a></li>
-                                        <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Sign out</a></li>
+                                        <div class="row">
+                                            <div class="col-md px-0">
+                                                <label class="py-2">Ubicación</label>
+                                            </div>
+                                            <div class="col-md-9 px-0">
+                                                <div class="form-group">
+                                                    <select th:field="*{locationId}" th:value="${locationId}" class="selectpicker form-control" title="Selecciona una ciudad" data-live-search="true">
+                                                        <option value="0">Todos</option>
+                                                        <option th:each="place:${places}" th:value="${place.getId()}" th:text="${place.getName()}"></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md px-0">
+                                                <label class="py-2">Profesión</label>
+                                            </div>
+                                            <div class="col-md-9 px-0">
+                                                <div class="form-group">
+                                                    <select th:field="*{studyId}" th:value="${studyId}" class="selectpicker form-control" title="Selecciona una profesión" data-live-search="true">
+                                                        <option value="0">Todos</option>
+                                                        <option th:each="profession:${professions}" th:value="${profession.getId()}" th:text="${profession.getCertificateName()}"></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md px-0">
+                                                <label class="py-2">Empresa</label>
+                                            </div>
+                                            <div class="col-md-9 px-0">
+                                                <div class="form-group">
+                                                    <select th:field="*{publisherId}" th:value="${publisherId}" class="selectpicker form-control" title="Selecciona una empresa" data-live-search="true">
+                                                        <option value="0">Todos</option>
+                                                        <option th:each="publisher:${publishers}" th:value="${publisher.getId()}" th:text="${publisher.getCompanyName()}"></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" th:field="*{publisherExclude}"
+                                                   th:value="${publisherExclude}" id="includePublisher">
+                                            <label class="form-check-label" for="includePublisher">
+                                                Excluir empresa seleccionada
+                                            </label>
+                                        </div>
                                     </ul>
                                 </div>
                             </li>
                         </ul>
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                        <button class="btn btn-lg btn-primary" type="submit">Filtrar</button>
+                        <button class="btn btn-primary" type="submit">Filtrar</button>
+                        <a class="btn btn-secondary" th:href="@{/search(p=${jobList.getNumber()},clearFilter=${true})}">Limpiar filtros</a>
                     </form>
                 </div>
             </div>
             <div class="col-9 p-4 ps-1">
-                <h2 class="text-center">Búsqueda de empleo</h2>
-                <p class="fw-lighter">Filtra para obtener ofertas más personalizadas.</p>
+                <h2 class="text-center mb-3">Búsqueda de empleo</h2>
                 <div class="row row-cols-1 row-cols-md-2 g-3">
                     <div class="col" th:each="job : ${jobList.content}">
                         <div class="card h-100" th:with="publisher=${job.getPublisher()}">
@@ -130,8 +237,13 @@
                         </div>
                     </div>
                 </div>
-                <p class="text-center my-2"><span th:text="${jobList.getTotalElements()}"></span> resultados de búsqueda.</p>
-                <nav>
+                <p class="text-center my-2" th:if="${jobList.getTotalElements()>0}">
+                    <span th:text="${jobList.getTotalElements()}"></span> resultados de búsqueda.
+                </p>
+                <p class="text-center mt-5 pt-5" th:unless="${jobList.getTotalElements()>0}">
+                    No se han encontrado resultados. Prueba a modificar los parámetrosde búsqueda ingresados.
+                </p>
+                <nav th:if="${jobList.getTotalElements()>0}">
                     <ul class="pagination justify-content-center">
                         <li class="page-item" th:classappend="${jobList.getNumber()==0} ? 'disabled' : ''">
                             <a class="page-link" th:href="@{/search(p=${jobList.getNumber()-1})}" aria-label="Previous">
