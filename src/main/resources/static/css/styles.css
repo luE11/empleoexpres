@@ -19,3 +19,11 @@ img.card-image {
 .max-vh-75 {
     max-height: 75vh !important;
 }
+
+.with-breaklines {
+    white-space: pre-line;
+}
+
+.fs-7 {
+    font-size: 0.9rem !important;
+}

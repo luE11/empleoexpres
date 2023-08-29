@@ -1,5 +1,6 @@
 package pra.lue11.empleoexpres.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -40,6 +41,11 @@ public class UserService {
 
     public boolean userExistsByEmail(String email){
         return userRepository.existsByEmail(email);
+    }
+
+    public User findById(int id){
+        return userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User with id "+id+" not found"));
     }
 
 }

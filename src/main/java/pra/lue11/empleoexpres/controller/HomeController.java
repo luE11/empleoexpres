@@ -1,5 +1,6 @@
 package pra.lue11.empleoexpres.controller;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -8,8 +9,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import pra.lue11.empleoexpres.dto.CandidateStudyDTO;
 import pra.lue11.empleoexpres.dto.JobHistoryDTO;
+import pra.lue11.empleoexpres.model.Publisher;
 import pra.lue11.empleoexpres.model.User;
 import pra.lue11.empleoexpres.model.enums.UserRole;
+import pra.lue11.empleoexpres.model.specifications.JobSpecification;
 import pra.lue11.empleoexpres.service.PersonService;
 import pra.lue11.empleoexpres.service.StudyService;
 import pra.lue11.empleoexpres.service.UserService;
@@ -21,7 +24,7 @@ import pra.lue11.empleoexpres.service.UserService;
 @AllArgsConstructor
 public class HomeController {
 
-    private final String PROFILE_TEMPLATE = "user/my-profile";
+    private final String PROFILE_TEMPLATE = "user/profile";
     private final String HOME_TEMPLATE = "user/home";
 
     private UserService userService;
@@ -34,13 +37,22 @@ public class HomeController {
     }
 
     @GetMapping(value = "/profile")
-    public String showSelfProfile(Authentication authentication, Model model) {
-        User self = getUserFromAuth(authentication);
-        model.addAttribute("user", self);
-        if(self.isPublisher())
-            model.addAttribute("publisher", self.getPublisher());
-        else{
-            model.addAttribute("candidate", self.getPerson());
+    public String showProfile(@RequestParam("id") @Nullable Integer userId,
+            Authentication authentication, Model model) {
+        User user = userId==null ? getUserFromAuth(authentication) : userService.findById(userId);
+        model.addAttribute("user", user);
+        boolean isSelfProfile = authentication.getName().compareTo(user.getEmail())==0;
+        model.addAttribute("isSelfProfile", isSelfProfile);
+        if(user.isPublisher()) {
+            model.addAttribute("publisher", user.getPublisher());
+            if (!isSelfProfile) {
+                JobSpecification spec = new JobSpecification();
+                Publisher p = user.getPublisher();
+                spec.setPublisherId(p.getId());
+                model.addAttribute("publisherJobFilter", spec);
+            }
+        }else{
+            model.addAttribute("candidate", user.getPerson());
             model.addAttribute("newJhistory", new JobHistoryDTO());
             model.addAttribute("candidateStudy", new CandidateStudyDTO());
             model.addAttribute("studies", studyService.getAllStudies());

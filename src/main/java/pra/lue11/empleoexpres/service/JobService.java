@@ -55,4 +55,9 @@ public class JobService {
                         .withSort(Sort.by(JOB_PUB_DATE_NAME).descending()));
     }
 
+    public Job getById(int id){
+        return jobRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Job with id " + id + " has not found"));
+    }
+
 }
