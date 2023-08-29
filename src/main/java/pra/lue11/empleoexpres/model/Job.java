@@ -16,6 +16,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.util.Set;
 
 /**
  * @author luE11 on 16/08/23
@@ -63,6 +64,9 @@ public class Job {
     @ManyToOne
     @JoinColumn(name = "publisher_id", referencedColumnName = "publisher_id", nullable = false)
     protected Publisher publisher;
+    @JsonIgnore
+    @OneToMany(mappedBy = "job", fetch = FetchType.EAGER, orphanRemoval = true)
+    private Set<JobHasCandidate> candidates;
 
     public Job(String title, JobState state, String description, Double salary, Double yearsOfExperience, JobModality jobMode) {
         this.title = title;

@@ -32,6 +32,7 @@ public class JobController {
     private static final String SEARCH_JOB_PAGE = "jobs/search.html";
     private final String PROFILE_TEMPLATE = "user/my-profile";
     private final String CONSULT_JOB_TEMPLATE = "jobs/consult.html";
+    private final String MY_JOBS_PAGE = "jobs/my-jobs";
 
     private UserService userService;
     private JobService jobService;
@@ -113,6 +114,18 @@ public class JobController {
         model.addAttribute("user", self);
         model.addAttribute("job", consultedJob);
         return CONSULT_JOB_TEMPLATE;
+    }
+
+    @GetMapping("/my-jobs")
+    public String showMyJobs(@RequestParam(value = "p", required = false) Integer page,
+                             Authentication authentication, Model model){
+        User self = getUserFromAuth(authentication);
+        if(self.isPublisher())
+            model.addAttribute("myJobs", jobService.getPublisherJobs(self.getPublisher().getId(), page));
+        else
+            model.addAttribute("myJobs", jobService.getCandidateJobs(self.getPerson().getId(), page));
+        model.addAttribute("user", self);
+        return MY_JOBS_PAGE;
     }
 
     // GET "/job/apply/{id}"

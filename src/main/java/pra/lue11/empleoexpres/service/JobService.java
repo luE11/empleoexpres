@@ -11,6 +11,7 @@ import pra.lue11.empleoexpres.dto.JobHistoryDTO;
 import pra.lue11.empleoexpres.model.Job;
 import pra.lue11.empleoexpres.model.JobHistory;
 import pra.lue11.empleoexpres.model.Person;
+import pra.lue11.empleoexpres.model.inmutable.CandidateAppliedJobView;
 import pra.lue11.empleoexpres.model.specifications.JobSpecification;
 import pra.lue11.empleoexpres.repository.JobHistoryRepository;
 import pra.lue11.empleoexpres.repository.JobRepository;
@@ -60,4 +61,11 @@ public class JobService {
                 .orElseThrow(() -> new EntityNotFoundException("Job with id " + id + " has not found"));
     }
 
+    public List<Job> getPublisherJobs(Integer publisherId, Integer page) {
+        return null;
+    }
+
+    public List<CandidateAppliedJobView> getCandidateJobs(Integer personId, Integer page) {
+        return null;
+    }
 }
