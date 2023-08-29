@@ -191,9 +191,6 @@
                 <div class="row row-cols-1 row-cols-md-2 g-3">
                     <div class="col" th:each="job : ${jobList.content}">
                         <div class="card h-100" th:with="publisher=${job.getPublisher()}">
-                            <div class="card-header" sec:authorize="hasAnyAuthority('PUBLISHER', 'ADMIN')">
-                                <!-- Edit, delete job for publishers and admins -->
-                            </div>
                             <div class="row g-0 ps-1">
                                 <div class="col-md-2 d-flex align-items-center justify-content-center">
                                     <img th:src="${ (publisher.getLogoUrl()!=null && publisher.isVisible()) ? publisher.getLogoUrl() : '/images/default_user_photo.svg'}"
@@ -232,7 +229,7 @@
                             </div>
                             <div class="card-footer">
                                 <small class="text-body-secondary" th:text="${job.getPubDateTime()}"></small>
-                                <a th:href="@{/job/{id}(id=${job.getId()})}" class="btn btn-outline-info float-end">Consultar oferta</a>
+                                <a th:href="@{/job/{id}(id=${job.getId()})}" class="btn btn-outline-info float-end py-0">Consultar oferta</a>
                             </div>
                         </div>
                     </div>

@@ -4,6 +4,7 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import jakarta.websocket.server.PathParam;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,6 +31,7 @@ import java.util.List;
 public class JobController {
     private static final String SEARCH_JOB_PAGE = "jobs/search.html";
     private final String PROFILE_TEMPLATE = "user/my-profile";
+    private final String CONSULT_JOB_TEMPLATE = "jobs/consult.html";
 
     private UserService userService;
     private JobService jobService;
@@ -102,6 +104,18 @@ public class JobController {
         model.addAttribute("publishers", getAllPublishers());
         return SEARCH_JOB_PAGE;
     }
+
+    @GetMapping("/job/{id}")
+    public String consultJobOffer(@PathVariable(value = "id") Integer id,
+                                  Authentication authentication, Model model){
+        User self = getUserFromAuth(authentication);
+        Job consultedJob = jobService.getById(id);
+        model.addAttribute("user", self);
+        model.addAttribute("job", consultedJob);
+        return CONSULT_JOB_TEMPLATE;
+    }
+
+    // GET "/job/apply/{id}"
 
     private Person getPersonFromAuth(Authentication authentication){
         User user = userService.findUserByEmail(authentication.getName()).orElseThrow(() -> new EntityNotFoundException("Logged user not found"));

@@ -301,7 +301,12 @@
         </div>
         <p class="text-capitalize fs-3 fw-bold text-primary my-3" th:text="${publisher.getCompanyName()}"></p>
         <p class="text-start fs-5"><i class="text-black-50 bi bi-at me-3"></i><span th:text="${user.getEmail()}"></span></p>
-        <script th:if="${publisher.getLogoUrl()==null}">
+        <form th:if="${!isSelfProfile}" method="POST" th:action="@{/search}" th:object="${publisherJobFilter}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <input type="hidden" th:field="*{publisherId}">
+            <button class="btn btn-primary" type="submit">Ver ofertas de esta empresa</button>
+        </form>
+        <script th:if="${isSelfProfile && publisher.getLogoUrl()==null}">
             document.addEventListener("DOMContentLoaded", function(event) {
                 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
                 const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
@@ -312,7 +317,7 @@
     <!-- Publisher right panel with additional info -->
     <div th:fragment="publisher-info-panel" class="p-3 text-start mx-5">
         <p class="fs-3 fw-bold text-primary mb-4">Descripción de la empresa</p>
-        <p th:text="${publisher.getDescription()}"></p>
+        <p th:text="${publisher.getDescription()}" class="with-breaklines"></p>
         <hr>
         <p>Empresa creada en: <span th:text="${publisher.getCreatedAtAsString()}"></span></p>
         <p>Más info? Num de trabajos publicados, fecha de registro</p>

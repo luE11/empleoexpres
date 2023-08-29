@@ -49,6 +49,10 @@ public class Publisher {
         this.visible = visible;
     }
 
+    public String getEmail(){
+        return user.getEmail();
+    }
+
     public String getCreatedAtAsString() {
         return createdAt.format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy, 'a las' hh:mm a"));
     }
