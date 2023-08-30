@@ -5,6 +5,14 @@ CREATE VIEW candidate_related_studies
             FROM persons p, persons_has_studies ps, studies s
             WHERE p.person_id=ps.person_id AND ps.study_id=s.study_id;
 
+-- candidate_applied_jobs view
+CREATE VIEW candidate_applied_jobs
+    AS SELECT row_number() over (order by j.pub_date) id, j.title, +
+    j.job_mode, jc.state, jc.company_observations, +
+    jc.candidate_comment, jc.updated_at, jc.person_id
+            FROM jobs_has_candidates jc, jobs j
+            WHERE jc.job_id=j.job_id;
+
 -- Insert fake data
 
 -- Places
