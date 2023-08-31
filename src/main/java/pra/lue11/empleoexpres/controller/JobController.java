@@ -128,6 +128,17 @@ public class JobController {
         return MY_JOBS_PAGE;
     }
 
+    @DeleteMapping("/job-application")
+    public String deleteJobApplication(@RequestParam(value = "jid") Integer jobId,
+                                       @RequestParam(value = "cid") Integer candidateId,
+                                       RedirectAttributes redirectAttributes){
+        jobService.deleteJobApplication(jobId, candidateId);
+        redirectAttributes.addFlashAttribute("flashMessage", "Aplicación eliminada exitosamente!");
+        return "redirect:/my-jobs";
+    }
+
+    // TODO: candidates list for publishers
+
     // GET "/job/apply/{id}"
 
     private Person getPersonFromAuth(Authentication authentication){

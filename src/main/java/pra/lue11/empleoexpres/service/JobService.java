@@ -9,12 +9,15 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import pra.lue11.empleoexpres.dto.JobHistoryDTO;
 import pra.lue11.empleoexpres.model.Job;
+import pra.lue11.empleoexpres.model.JobCandidateId;
 import pra.lue11.empleoexpres.model.JobHistory;
 import pra.lue11.empleoexpres.model.Person;
 import pra.lue11.empleoexpres.model.inmutable.CandidateAppliedJobView;
 import pra.lue11.empleoexpres.model.specifications.JobSpecification;
+import pra.lue11.empleoexpres.repository.JobHasCandidateRepository;
 import pra.lue11.empleoexpres.repository.JobHistoryRepository;
 import pra.lue11.empleoexpres.repository.JobRepository;
+import pra.lue11.empleoexpres.repository.view.CandidateAppliedJobRepository;
 
 import java.util.List;
 
@@ -30,6 +33,8 @@ public class JobService {
 
     private JobHistoryRepository jobHistoryRepository;
     private JobRepository jobRepository;
+    private CandidateAppliedJobRepository candidateAppliedJobRepository;
+    private JobHasCandidateRepository jobHasCandidateRepository;
 
     public void insertJobHistory(JobHistoryDTO jobHistoryDTO, Person candidate){
         JobHistory jobHistory = jobHistoryDTO.generateJobHistory();
@@ -61,11 +66,19 @@ public class JobService {
                 .orElseThrow(() -> new EntityNotFoundException("Job with id " + id + " has not found"));
     }
 
-    public List<Job> getPublisherJobs(Integer publisherId, Integer page) {
-        return null;
+    public Page<Job> getPublisherJobs(Integer publisherId, Integer page){
+        int currPage = page != null ? page : 0;
+        return jobRepository.findAllByPublisherId(publisherId,
+                PageRequest.ofSize(PAGE_SIZE).withPage(currPage));
     }
 
-    public List<CandidateAppliedJobView> getCandidateJobs(Integer personId, Integer page) {
-        return null;
+    public Page<CandidateAppliedJobView> getCandidateJobs(Integer personId, Integer page) {
+        int currPage = page != null ? page : 0;
+        return candidateAppliedJobRepository.findAllByPersonId(personId,
+                PageRequest.ofSize(PAGE_SIZE).withPage(currPage));
+    }
+
+    public void deleteJobApplication(int jobId, int candidateId){
+        jobHasCandidateRepository.deleteById(new JobCandidateId(candidateId, jobId));
     }
 }

@@ -11,6 +11,7 @@ import pra.lue11.empleoexpres.model.enums.JobApplicationState;
 import pra.lue11.empleoexpres.model.enums.JobModality;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author luE11 on 29/08/23
@@ -29,6 +30,8 @@ public class CandidateAppliedJobView {
     private Integer id;
     @Column(name = "title")
     private String title;
+    @Column(name = "company_name")
+    private String companyName;
     @Enumerated(value = EnumType.STRING)
     @Column(name = "job_mode")
     private JobModality jobMode;
@@ -44,5 +47,12 @@ public class CandidateAppliedJobView {
     @JsonIgnore
     @Column(name = "person_id")
     private int personId;
+    @JsonIgnore
+    @Column(name = "job_id")
+    private int jobId;
+
+    public String getUpdatedAtAsString() {
+        return updatedAt.format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy, 'a las' hh:mm a"));
+    }
 
 }
