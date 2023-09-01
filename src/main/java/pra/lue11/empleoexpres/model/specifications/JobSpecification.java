@@ -89,6 +89,7 @@ public class JobSpecification implements Specification<Job> {
             else
                 predicates.add(cb.equal(root.get("publisher").get("id"), publisherId));
         }
+        predicates.add(cb.isFalse(root.get("softDeleted")));
         return cb.and(predicates.toArray(new Predicate[predicates.size()]));
     }
 

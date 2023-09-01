@@ -35,7 +35,7 @@
                         <th>Fecha de publicación</th>
                         <td th:text="${job.getPubDateTime()}" class="border-end"></td>
                         <th>Candidatos aplicados</th>
-                        <td class="border-end">falta...</td>
+                        <td class="border-end" th:text="${job.getApplicationCount()}"></td>
                     </tr>
                 </table>
                 <div class="card text-bg-light mb-3">
@@ -43,7 +43,7 @@
                     <div class="card-body">
                         <p class="card-text with-breaklines" th:text="${job.getDescription()}"></p>
                     </div>
-                    <div class="card-footer" sec:authorize="hasAuthority('CANDIDATE')">
+                    <div class="card-footer" sec:authorize="hasAuthority('CANDIDATE')" th:if="${!applied}">
                         <a class="btn btn-primary" th:href="@{/job/apply/{id}(id=${job.getId()})}">Aplicar</a>
                     </div>
                 </div>

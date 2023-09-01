@@ -113,6 +113,8 @@ public class JobController {
         Job consultedJob = jobService.getById(id);
         model.addAttribute("user", self);
         model.addAttribute("job", consultedJob);
+        if(self.isCandidate())
+            model.addAttribute("applied", jobService.isJobAppliedByCandidate(self.getPerson().getId(), id));
         return CONSULT_JOB_TEMPLATE;
     }
 
@@ -134,6 +136,14 @@ public class JobController {
                                        RedirectAttributes redirectAttributes){
         jobService.deleteJobApplication(jobId, candidateId);
         redirectAttributes.addFlashAttribute("flashMessage", "Aplicación eliminada exitosamente!");
+        return "redirect:/my-jobs";
+    }
+
+    @DeleteMapping("/job")
+    public String deleteJob(@RequestParam(value = "id") Integer jobId,
+                                       RedirectAttributes redirectAttributes){
+        jobService.deleteJob(jobId);
+        redirectAttributes.addFlashAttribute("flashMessage", "Oferta eliminada exitosamente!");
         return "redirect:/my-jobs";
     }
 

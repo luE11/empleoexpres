@@ -48,6 +48,9 @@ public class User {
     public boolean isPublisher(){
         return this.role.compareTo(UserRole.PUBLISHER)==0;
     }
+    public boolean isCandidate() {
+        return this.role.compareTo(UserRole.CANDIDATE)==0;
+    }
 
     @Override
     public String toString() {
@@ -56,4 +59,5 @@ public class User {
                 ", role=" + role.getRoleName() +
                 '}';
     }
+
 }

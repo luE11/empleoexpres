@@ -9,7 +9,7 @@
 <body>
     <!-- Candidate applied job list -->
     <div th:fragment="candidate-job-list" class="px-2">
-        <h2 class="text-center mb-2">Listado empleos aplicados candidato</h2>
+        <h2 class="text-center mb-2">Listado de aplicaciones del candidato</h2>
         <table class="table table-light table-striped table-bordered border-secondary-subtle align-middle">
             <thead>
                 <tr class="table-primary">
@@ -25,7 +25,7 @@
             </thead>
             <tbody class="table-group-divider">
                 <tr th:each="offer: ${myJobs}">
-                    <th scope="row" th:text="${offer.getTitle()}"></th>
+                    <th scope="row"><a th:text="${offer.getTitle()}" th:href="@{/job/{id}(id=${offer.getJobId()})}"></a></th>
                     <td th:text="${offer.getCompanyName()}"></td>
                     <td th:text="${offer.getJobMode().getModality()}"></td>
                     <td th:text="${offer.getState().getState()}"></td>
@@ -67,7 +67,55 @@
 
     <!-- Publisher created job list -->
     <div th:fragment="publisher-job-list">
-        Listado ofertas publicadas empresa
+        <h2 class="text-center mb-2">Listado de ofertas publicadas</h2>
+        <table class="table table-light table-striped table-bordered border-secondary-subtle align-middle">
+            <thead>
+            <tr class="table-primary">
+                <th scope="col">Título</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Fecha publicación</th>
+                <th scope="col">Candidatos postulados</th>
+                <th scope="col">Opciones</th>
+            </tr>
+            </thead>
+            <tbody class="table-group-divider">
+            <tr th:each="job: ${myJobs}">
+                <th scope="row"><a th:text="${job.getTitle()}" th:href="@{/job/{id}(id=${job.getId()})}"></a></th>
+                <td th:text="${job.getState().getState()}"></td>
+                <td th:text="${job.getPubDateAsString()}"></td>
+                <td><a class="btn btn-info" th:text="${'Consultar '+job.getApplicationCount()+ ' postulación(es)'}"
+                    th:href="@{/job-application(jid=${job.getId()})}"></a></td>
+                <td>
+                    <form th:action="@{/job(id=${job.getId()})}" th:method="delete">
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <nav th:if="${myJobs.getTotalElements()>0}">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${myJobs.getNumber()==0} ? 'disabled' : ''">
+                    <a class="page-link" th:href="@{/my-jobs(p=${myJobs.getNumber()-1})}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                        <span class="sr-only">Previo</span>
+                    </a>
+                </li>
+                <li class="page-item" th:each="i: ${#numbers.sequence(-2, 2)}"
+                    th:unless="${(myJobs.getNumber()+i) < 0 || (myJobs.getNumber()+i) > myJobs.getTotalPages()-1}"
+                    th:classappend="${i==0 ? 'active': ''}">
+                    <a class="page-link" th:href="@{/my-jobs(p=${myJobs.getNumber()+i})}"
+                       th:text="${myJobs.getNumber()+i+1}"></a>
+                </li>
+                <li class="page-item" th:classappend="${myJobs.getNumber()==myJobs.getTotalPages()-1} ? 'disabled' : ''">
+                    <a class="page-link" th:href="@{/my-jobs(p=${myJobs.getNumber()+1})}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                        <span class="sr-only">Siguiente</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
     </div>
 </body>
 

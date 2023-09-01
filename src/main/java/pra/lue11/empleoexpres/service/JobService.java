@@ -78,7 +78,19 @@ public class JobService {
                 PageRequest.ofSize(PAGE_SIZE).withPage(currPage));
     }
 
+    public boolean isJobAppliedByCandidate(int candidateId, int jobId){
+        return jobHasCandidateRepository.existsById(new JobCandidateId(candidateId, jobId));
+    }
+
     public void deleteJobApplication(int jobId, int candidateId){
         jobHasCandidateRepository.deleteById(new JobCandidateId(candidateId, jobId));
+    }
+
+    public void deleteJob(int jobId){
+        jobRepository.findById(jobId)
+                .map(job -> {
+                    job.setSoftDeleted(true);
+                    return jobRepository.save(job);
+                });
     }
 }

@@ -16,6 +16,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
 /**
@@ -43,7 +44,7 @@ public class Job {
     @Column(name = "pub_date", nullable = false)
     @CreationTimestamp
     protected LocalDateTime pubDate;
-    @Column(name = "salary", nullable = false) // TODO: Componente selector rango de precios?
+    @Column(name = "salary", nullable = false)
     @Min(0)
     protected Double salary;
     @Column(name = "years_of_experience", nullable = false)
@@ -52,6 +53,8 @@ public class Job {
     @Enumerated(value = EnumType.STRING)
     @Column(name = "job_mode", nullable = false)
     protected JobModality jobMode;
+    @Column(name = "soft_deleted", nullable = false, columnDefinition = "boolean default false")
+    protected Boolean softDeleted = Boolean.FALSE;
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "place_id", referencedColumnName = "place_id")
@@ -85,6 +88,10 @@ public class Job {
         return description.length()<=length ? description : description.substring(0, length)+"...";
     }
 
+    public String getPubDateAsString() {
+        return pubDate.format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy, 'a las' hh:mm a"));
+    }
+
     public String getPubDateTime(){
         Period p = Period.between(pubDate.toLocalDate(), LocalDate.now());
         Duration d = Duration.between(pubDate, LocalDateTime.now());
@@ -103,5 +110,9 @@ public class Job {
         else
             dateDiff.append("Hace ").append(d.getSeconds()).append(" segundos");
         return dateDiff.toString();
+    }
+
+    public int getApplicationCount(){
+        return this.candidates.size();
     }
 }
