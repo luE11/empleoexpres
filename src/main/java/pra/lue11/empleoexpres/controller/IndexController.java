@@ -16,10 +16,8 @@ public class IndexController {
     @Autowired
     private BCryptPasswordEncoder encoder;
 
-
     @GetMapping
     public String showIndexPage() {
-        System.out.println(encoder.encode("1234"));
         return INDEX_PAGE;
     }
 

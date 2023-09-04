@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>EmpleoExprés | Empleos</title>
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}"/>
+    <link th:rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body>
+    <nav th:replace="~{fragments/loggedin.html :: navbar }"></nav>
+    <th:block th:if="${flashMessage}">
+        <div th:replace="~{fragments/bootstrap-components.html :: flashMessage}"></div>
+    </th:block>
+    <div class="m-2">
+        <a class="btn text-info" onclick="history.back();"><i class="bi bi-arrow-left-square"></i> Volver</a>
+        <div th:replace="~{fragments/my-jobs-list.html :: (${user.isPublisher()} ? publisher-job-list : candidate-job-list)}"></div>
+    </div>
+    <script th:src="@{/webjars/jquery/3.6.1/jquery.min.js}"></script>
+    <script th:src="@{/webjars/popper.js/2.11.7/umd/popper.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.min.js}"></script>
+</body>
+</html>

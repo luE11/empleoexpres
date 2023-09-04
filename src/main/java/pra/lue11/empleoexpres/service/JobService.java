@@ -8,12 +8,16 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import pra.lue11.empleoexpres.dto.JobHistoryDTO;
-import pra.lue11.empleoexpres.model.Job;
-import pra.lue11.empleoexpres.model.JobHistory;
-import pra.lue11.empleoexpres.model.Person;
+import pra.lue11.empleoexpres.model.*;
+import pra.lue11.empleoexpres.model.enums.JobState;
+import pra.lue11.empleoexpres.model.inmutable.ApplicationView;
+import pra.lue11.empleoexpres.model.inmutable.CandidateAppliedJobView;
 import pra.lue11.empleoexpres.model.specifications.JobSpecification;
+import pra.lue11.empleoexpres.repository.JobHasCandidateRepository;
 import pra.lue11.empleoexpres.repository.JobHistoryRepository;
 import pra.lue11.empleoexpres.repository.JobRepository;
+import pra.lue11.empleoexpres.repository.view.ApplicationRepository;
+import pra.lue11.empleoexpres.repository.view.CandidateAppliedJobRepository;
 
 import java.util.List;
 
@@ -29,6 +33,9 @@ public class JobService {
 
     private JobHistoryRepository jobHistoryRepository;
     private JobRepository jobRepository;
+    private CandidateAppliedJobRepository candidateAppliedJobRepository;
+    private JobHasCandidateRepository jobHasCandidateRepository;
+    private ApplicationRepository applicationRepository;
 
     public void insertJobHistory(JobHistoryDTO jobHistoryDTO, Person candidate){
         JobHistory jobHistory = jobHistoryDTO.generateJobHistory();
@@ -42,7 +49,7 @@ public class JobService {
 
     public void deleteJobHistory(Integer id, Person person){
         JobHistory jh = jobHistoryRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Job history of id " + id + " has not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Job history of id " + id + " was not found"));
         if(!jh.getCandidate().equals(person))
             throw new AccessDeniedException("User can just delete its own history jobs");
         jobHistoryRepository.deleteById(id);
@@ -57,7 +64,47 @@ public class JobService {
 
     public Job getById(int id){
         return jobRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Job with id " + id + " has not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Job with id " + id + " was not found"));
     }
 
+    public Page<Job> getPublisherJobs(Integer publisherId, Integer page){
+        int currPage = page != null ? page : 0;
+        return jobRepository.findAllByPublisherId(publisherId,
+                PageRequest.ofSize(PAGE_SIZE).withPage(currPage));
+    }
+
+    public Page<CandidateAppliedJobView> getCandidateJobs(Integer personId, Integer page) {
+        int currPage = page != null ? page : 0;
+        return candidateAppliedJobRepository.findAllByPersonId(personId,
+                PageRequest.ofSize(PAGE_SIZE).withPage(currPage));
+    }
+
+    public Page<ApplicationView> getJobApplications(Integer jobId, Integer page){
+        int currPage = page != null ? page : 0;
+        return applicationRepository.findAllByJobId(jobId,
+                PageRequest.ofSize(PAGE_SIZE).withPage(currPage).withSort(Sort.by(Sort.Order.desc("updatedAt"))));
+    }
+
+    public void deleteJobApplication(int jobId, int candidateId){
+        jobHasCandidateRepository.deleteById(new JobCandidateId(candidateId, jobId));
+    }
+
+    public void deleteJob(int jobId){
+        jobRepository.findById(jobId)
+                .map(job -> {
+                    job.setSoftDeleted(true);
+                    job.setState(JobState.CLOSED);
+                    return jobRepository.save(job);
+                });
+    }
+
+    public JobHasCandidate getApplicationDetails(int jobId, int personId){
+        return jobHasCandidateRepository.findById(new JobCandidateId(personId, jobId))
+                .orElseThrow(() -> new EntityNotFoundException("Application with job id " + jobId +
+                        " and person id "+personId+" was not found"));
+    }
+
+    public boolean isJobAppliedByCandidate(int candidateId, int jobId){
+        return jobHasCandidateRepository.existsById(new JobCandidateId(candidateId, jobId));
+    }
 }

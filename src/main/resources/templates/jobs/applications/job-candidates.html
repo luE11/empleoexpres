@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>EmpleoExprés | Postulaciones</title>
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}"/>
+    <link th:rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body>
+    <nav th:replace="~{fragments/loggedin.html :: navbar }"></nav>
+    <div class="m-3">
+        <a class="btn text-info" onclick="history.back();"><i class="bi bi-arrow-left-square"></i> Volver</a>
+        <h1 th:text="${job.title}"></h1>
+        <p class="text-secondary">Candidatos postulados</p>
+        <div class="col-md-8 offset-md-2 mt-2">
+            <table class="table table-light table-striped table-bordered border-secondary-subtle align-middle">
+                <thead>
+                <tr class="table-primary">
+                    <th scope="col">Candidato</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Última actualización</th>
+                    <th scope="col">Opciones</th>
+                </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                <tr th:each="jobApp: ${applications}">
+                    <th><span th:text="${jobApp.getName()}"></span></th>
+                    <td th:text="${jobApp.getState().getState()}"></td>
+                    <td th:text="${jobApp.getLastUpdateTime()}"></td>
+                    <td>
+                        <a class="btn btn-info me-2"
+                           th:href="@{/job/{jid}/application/{cid}(jid=${job.getId()}, cid=${jobApp.getPersonId()})}">
+                            Administrar postulación
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script th:src="@{/webjars/jquery/3.6.1/jquery.min.js}"></script>
+    <script th:src="@{/webjars/popper.js/2.11.7/umd/popper.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.min.js}"></script>
+</body>
+</html>

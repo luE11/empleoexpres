@@ -22,6 +22,7 @@ import pra.lue11.empleoexpres.model.specifications.JobSpecification;
 import pra.lue11.empleoexpres.service.*;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author luE11 on 1/08/23
@@ -32,6 +33,9 @@ public class JobController {
     private static final String SEARCH_JOB_PAGE = "jobs/search.html";
     private final String PROFILE_TEMPLATE = "user/my-profile";
     private final String CONSULT_JOB_TEMPLATE = "jobs/consult.html";
+    private final String MY_JOBS_PAGE = "jobs/my-jobs";
+    private final String JOB_CANDIDATES_PAGE = "jobs/applications/job-candidates";
+    private final String APPLICATION_DETAILS_PAGE = "jobs/applications/details";
 
     private UserService userService;
     private JobService jobService;
@@ -112,8 +116,74 @@ public class JobController {
         Job consultedJob = jobService.getById(id);
         model.addAttribute("user", self);
         model.addAttribute("job", consultedJob);
+        if(self.isCandidate())
+            model.addAttribute("applied", jobService.isJobAppliedByCandidate(self.getPerson().getId(), id));
         return CONSULT_JOB_TEMPLATE;
     }
+
+    @GetMapping("/my-jobs")
+    public String showMyJobs(@RequestParam(value = "p", required = false) Integer page,
+                             Authentication authentication, Model model){
+        User self = getUserFromAuth(authentication);
+        if(self.isPublisher())
+            model.addAttribute("myJobs", jobService.getPublisherJobs(self.getPublisher().getId(), page));
+        else
+            model.addAttribute("myJobs", jobService.getCandidateJobs(self.getPerson().getId(), page));
+        model.addAttribute("user", self);
+        return MY_JOBS_PAGE;
+    }
+
+    @PreAuthorize("hasAuthority('PUBLISHER')")
+    @GetMapping("/job/{jid}/application")
+    public String showJobApplications(@RequestParam(value = "p", required = false) Integer page,
+                                      @PathVariable(name = "jid") Integer jobId,
+                                      Model model, Authentication authentication){
+        User self = getUserFromAuth(authentication);
+        Job job = jobService.getById(jobId);
+        if(!self.equals(job.getPublisher().getUser()))
+            return "redirect:/search";
+        model.addAttribute("user", self);
+        model.addAttribute("job", job);
+        model.addAttribute("applications", jobService.getJobApplications(jobId, page));
+        return JOB_CANDIDATES_PAGE;
+    }
+
+    @PreAuthorize("hasAuthority('PUBLISHER')")
+    @GetMapping("/job/{jid}/application/{cid}")
+    public String showJobApplicationDetails(@RequestParam(value = "p", required = false) Integer page,
+                                      @PathVariable(name = "jid") Integer jobId,
+                                        @PathVariable(name = "cid") Integer candidateId,
+                                      Model model, Authentication authentication){
+        User self = getUserFromAuth(authentication);
+        Job job = jobService.getById(jobId);
+        if(!self.equals(job.getPublisher().getUser()))
+            return "redirect:/search";
+        model.addAttribute("user", self);
+        model.addAttribute("job", job);
+        model.addAttribute("appDetails", jobService.getApplicationDetails(jobId, page));
+        return APPLICATION_DETAILS_PAGE;
+    }
+
+    @PreAuthorize("hasAuthority('CANDIDATE')")
+    @DeleteMapping("/job-application")
+    public String deleteJobApplication(@RequestParam(value = "jid") Integer jobId,
+                                       @RequestParam(value = "cid") Integer candidateId,
+                                       RedirectAttributes redirectAttributes){
+        jobService.deleteJobApplication(jobId, candidateId);
+        redirectAttributes.addFlashAttribute("flashMessage", "Aplicación eliminada exitosamente!");
+        return "redirect:/my-jobs";
+    }
+
+    @PreAuthorize("hasAnyAuthority('PUBLISHER', 'ADMIN')")
+    @DeleteMapping("/job")
+    public String deleteJob(@RequestParam(value = "id") Integer jobId,
+                                       RedirectAttributes redirectAttributes){
+        jobService.deleteJob(jobId);
+        redirectAttributes.addFlashAttribute("flashMessage", "Oferta eliminada exitosamente!");
+        return "redirect:/my-jobs";
+    }
+
+    // TODO: candidates list for publishers
 
     // GET "/job/apply/{id}"
 

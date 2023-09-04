@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Index</title>
+</head>
+
+<body>
+    <!-- Candidate applied job list -->
+    <div th:fragment="candidate-job-list" class="px-2">
+        <h2 class="text-center mb-2">Listado de aplicaciones del candidato</h2>
+        <table class="table table-light table-striped table-bordered border-secondary-subtle align-middle">
+            <thead>
+                <tr class="table-primary">
+                    <th scope="col">Título</th>
+                    <th scope="col">Empresa</th>
+                    <th scope="col">Modalidad</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Observación empresa</th>
+                    <th scope="col">Observación candidato</th>
+                    <th scope="col">Últ. actualización</th>
+                    <th scope="col">Opciones</th>
+                </tr>
+            </thead>
+            <tbody class="table-group-divider">
+                <tr th:each="offer: ${myJobs}">
+                    <th scope="row"><a th:text="${offer.getTitle()}" th:href="@{/job/{id}(id=${offer.getJobId()})}"></a></th>
+                    <td th:text="${offer.getCompanyName()}"></td>
+                    <td th:text="${offer.getJobMode().getModality()}"></td>
+                    <td th:text="${offer.getState().getState()}"></td>
+                    <td th:text="${offer.getCompanyObservations()}"></td>
+                    <td th:text="${offer.getCandidateComment()}"></td>
+                    <td th:text="${offer.getUpdatedAtAsString()}"></td>
+                    <td>
+                        <form th:action="@{/job-application(jid=${offer.getJobId()},cid=${offer.getPersonId()})}" th:method="delete">
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <nav th:if="${myJobs.getTotalElements()>0}">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${myJobs.getNumber()==0} ? 'disabled' : ''">
+                    <a class="page-link" th:href="@{/my-jobs(p=${myJobs.getNumber()-1})}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                        <span class="sr-only">Previo</span>
+                    </a>
+                </li>
+                <li class="page-item" th:each="i: ${#numbers.sequence(-2, 2)}"
+                    th:unless="${(myJobs.getNumber()+i) < 0 || (myJobs.getNumber()+i) > myJobs.getTotalPages()-1}"
+                    th:classappend="${i==0 ? 'active': ''}">
+                    <a class="page-link" th:href="@{/my-jobs(p=${myJobs.getNumber()+i})}"
+                       th:text="${myJobs.getNumber()+i+1}"></a>
+                </li>
+                <li class="page-item" th:classappend="${myJobs.getNumber()==myJobs.getTotalPages()-1} ? 'disabled' : ''">
+                    <a class="page-link" th:href="@{/my-jobs(p=${myJobs.getNumber()+1})}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                        <span class="sr-only">Siguiente</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Publisher created job list -->
+    <div th:fragment="publisher-job-list">
+        <h2 class="text-center mb-2">Listado de ofertas publicadas</h2>
+        <table class="table table-light table-striped table-bordered border-secondary-subtle align-middle">
+            <thead>
+            <tr class="table-primary">
+                <th scope="col">Título</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Fecha publicación</th>
+                <th scope="col">Opciones</th>
+            </tr>
+            </thead>
+            <tbody class="table-group-divider">
+            <tr th:each="job: ${myJobs}">
+                <th scope="row">
+                    <a th:href="@{/job/{id}(id=${job.getId()})}">
+                        <span th:text="${job.getTitle()}"></span>
+                        <span class="badge text-bg-danger ms-2" th:if="${job.isSoftDeleted()}">Eliminado</span>
+                    </a>
+                </th>
+                <!-- Badge if deleted, same in consult job -->
+                <td th:text="${job.getState().getState()}"></td>
+                <td th:text="${job.getPubDateAsString()}"></td>
+                <td>
+                    <a class="btn btn-info me-2" th:href="@{/job/{jid}/application(jid=${job.getId()})}">
+                        Ver postulaciones
+                    </a>
+                    <form th:action="@{/job(id=${job.getId()})}" th:method="delete" class="d-inline">
+                        <button type="submit" class="btn btn-danger"
+                                th:disabled="${job.isSoftDeleted()}">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <nav th:if="${myJobs.getTotalElements()>0}">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${myJobs.getNumber()==0} ? 'disabled' : ''">
+                    <a class="page-link" th:href="@{/my-jobs(p=${myJobs.getNumber()-1})}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                        <span class="sr-only">Previo</span>
+                    </a>
+                </li>
+                <li class="page-item" th:each="i: ${#numbers.sequence(-2, 2)}"
+                    th:unless="${(myJobs.getNumber()+i) < 0 || (myJobs.getNumber()+i) > myJobs.getTotalPages()-1}"
+                    th:classappend="${i==0 ? 'active': ''}">
+                    <a class="page-link" th:href="@{/my-jobs(p=${myJobs.getNumber()+i})}"
+                       th:text="${myJobs.getNumber()+i+1}"></a>
+                </li>
+                <li class="page-item" th:classappend="${myJobs.getNumber()==myJobs.getTotalPages()-1} ? 'disabled' : ''">
+                    <a class="page-link" th:href="@{/my-jobs(p=${myJobs.getNumber()+1})}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                        <span class="sr-only">Siguiente</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</body>
+
+</html>

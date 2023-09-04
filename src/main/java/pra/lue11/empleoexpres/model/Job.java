@@ -11,11 +11,14 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import pra.lue11.empleoexpres.model.enums.JobModality;
 import pra.lue11.empleoexpres.model.enums.JobState;
+import pra.lue11.empleoexpres.utils.LocalDateUtils;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.util.Set;
 
 /**
  * @author luE11 on 16/08/23
@@ -42,7 +45,7 @@ public class Job {
     @Column(name = "pub_date", nullable = false)
     @CreationTimestamp
     protected LocalDateTime pubDate;
-    @Column(name = "salary", nullable = false) // TODO: Componente selector rango de precios?
+    @Column(name = "salary", nullable = false)
     @Min(0)
     protected Double salary;
     @Column(name = "years_of_experience", nullable = false)
@@ -51,6 +54,8 @@ public class Job {
     @Enumerated(value = EnumType.STRING)
     @Column(name = "job_mode", nullable = false)
     protected JobModality jobMode;
+    @Column(name = "soft_deleted", nullable = false, columnDefinition = "boolean default false")
+    protected boolean softDeleted = Boolean.FALSE;
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "place_id", referencedColumnName = "place_id")
@@ -63,6 +68,9 @@ public class Job {
     @ManyToOne
     @JoinColumn(name = "publisher_id", referencedColumnName = "publisher_id", nullable = false)
     protected Publisher publisher;
+    @JsonIgnore
+    @OneToMany(mappedBy = "job", fetch = FetchType.EAGER, orphanRemoval = true)
+    private Set<JobHasCandidate> candidates;
 
     public Job(String title, JobState state, String description, Double salary, Double yearsOfExperience, JobModality jobMode) {
         this.title = title;
@@ -81,23 +89,15 @@ public class Job {
         return description.length()<=length ? description : description.substring(0, length)+"...";
     }
 
+    public String getPubDateAsString() {
+        return pubDate.format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy, 'a las' hh:mm a"));
+    }
+
     public String getPubDateTime(){
-        Period p = Period.between(pubDate.toLocalDate(), LocalDate.now());
-        Duration d = Duration.between(pubDate, LocalDateTime.now());
-        StringBuilder dateDiff = new StringBuilder();
-        if(p.getYears()>0)
-            dateDiff.append("Hace ").append(p.getYears()).append(" años");
-        else if(p.getMonths()>0)
-            dateDiff.append("Hace ").append(p.getMonths()).append(" meses");
-        else if(p.getDays()>0)
-            dateDiff.append("Hace ").append(p.getDays()).append(" días");
-        else if(d.getSeconds()>=60)
-            if(d.getSeconds()>=(60*60))
-                dateDiff.append("Hace ").append(Math.round((float) d.getSeconds() / (60*60))).append(" horas");
-            else
-                dateDiff.append("Hace ").append(Math.round((float) d.getSeconds() / 60)).append(" minutos");
-        else
-            dateDiff.append("Hace ").append(d.getSeconds()).append(" segundos");
-        return dateDiff.toString();
+        return LocalDateUtils.localDateTimeAsRecentTime(pubDate);
+    }
+
+    public int getApplicationCount(){
+        return this.candidates.size();
     }
 }
