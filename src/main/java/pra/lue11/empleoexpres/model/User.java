@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pra.lue11.empleoexpres.model.enums.UserRole;
 
+import java.util.Objects;
+
 /**
  * @author luE11 on 17/07/23
  */
@@ -50,6 +52,19 @@ public class User {
     }
     public boolean isCandidate() {
         return this.role.compareTo(UserRole.CANDIDATE)==0;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, email, password, role, person, publisher);
     }
 
     @Override

@@ -9,6 +9,9 @@
 <body>
     <nav th:replace="~{fragments/loggedin.html :: navbar }"></nav>
     <div class="m-2">
+        <div class="alert alert-danger text-center" role="alert" th:if="${job.isSoftDeleted()}">
+            <span>Oferta eliminada</span>
+        </div>
         <a class="btn text-info" onclick="history.back();"><i class="bi bi-arrow-left-square"></i> Volver</a>
         <div class="row">
             <div class="col-md-10 p-3">
@@ -44,7 +47,7 @@
                         <p class="card-text with-breaklines" th:text="${job.getDescription()}"></p>
                     </div>
                     <div class="card-footer" sec:authorize="hasAuthority('CANDIDATE')" th:if="${!applied}">
-                        <a class="btn btn-primary" th:href="@{/job/apply/{id}(id=${job.getId()})}">Aplicar</a>
+                        <a class="btn btn-primary" th:if="${!job.isSoftDeleted()}" th:href="@{/job/apply/{id}(id=${job.getId()})}">Aplicar</a>
                     </div>
                 </div>
             </div>

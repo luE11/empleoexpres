@@ -13,6 +13,13 @@ CREATE VIEW candidate_applied_jobs
             FROM jobs_has_candidates jc, jobs j, publishers p
             WHERE jc.job_id=j.job_id AND j.publisher_id=p.publisher_id;
 
+-- applications view
+CREATE VIEW applications
+    AS SELECT row_number() over (order by p.person_id) id, CONCAT(p.first_name, ' ', p.last_name) as name,
+           	jc.state, jc.updated_at, jc.job_id, p.person_id
+               FROM jobs_has_candidates jc, persons p
+               WHERE jc.person_id=p.person_id;
+
 -- Insert test data
 
 -- Places

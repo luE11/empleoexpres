@@ -74,20 +74,27 @@
                 <th scope="col">Título</th>
                 <th scope="col">Estado</th>
                 <th scope="col">Fecha publicación</th>
-                <th scope="col">Candidatos postulados</th>
                 <th scope="col">Opciones</th>
             </tr>
             </thead>
             <tbody class="table-group-divider">
             <tr th:each="job: ${myJobs}">
-                <th scope="row"><a th:text="${job.getTitle()}" th:href="@{/job/{id}(id=${job.getId()})}"></a></th>
+                <th scope="row">
+                    <a th:href="@{/job/{id}(id=${job.getId()})}">
+                        <span th:text="${job.getTitle()}"></span>
+                        <span class="badge text-bg-danger ms-2" th:if="${job.isSoftDeleted()}">Eliminado</span>
+                    </a>
+                </th>
+                <!-- Badge if deleted, same in consult job -->
                 <td th:text="${job.getState().getState()}"></td>
                 <td th:text="${job.getPubDateAsString()}"></td>
-                <td><a class="btn btn-info" th:text="${'Consultar '+job.getApplicationCount()+ ' postulación(es)'}"
-                    th:href="@{/job-application(jid=${job.getId()})}"></a></td>
                 <td>
-                    <form th:action="@{/job(id=${job.getId()})}" th:method="delete">
-                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    <a class="btn btn-info me-2" th:href="@{/job/{jid}/application(jid=${job.getId()})}">
+                        Ver postulaciones
+                    </a>
+                    <form th:action="@{/job(id=${job.getId()})}" th:method="delete" class="d-inline">
+                        <button type="submit" class="btn btn-danger"
+                                th:disabled="${job.isSoftDeleted()}">Eliminar</button>
                     </form>
                 </td>
             </tr>

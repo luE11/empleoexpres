@@ -11,6 +11,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import pra.lue11.empleoexpres.model.enums.JobModality;
 import pra.lue11.empleoexpres.model.enums.JobState;
+import pra.lue11.empleoexpres.utils.LocalDateUtils;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -54,7 +55,7 @@ public class Job {
     @Column(name = "job_mode", nullable = false)
     protected JobModality jobMode;
     @Column(name = "soft_deleted", nullable = false, columnDefinition = "boolean default false")
-    protected Boolean softDeleted = Boolean.FALSE;
+    protected boolean softDeleted = Boolean.FALSE;
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "place_id", referencedColumnName = "place_id")
@@ -93,23 +94,7 @@ public class Job {
     }
 
     public String getPubDateTime(){
-        Period p = Period.between(pubDate.toLocalDate(), LocalDate.now());
-        Duration d = Duration.between(pubDate, LocalDateTime.now());
-        StringBuilder dateDiff = new StringBuilder();
-        if(p.getYears()>0)
-            dateDiff.append("Hace ").append(p.getYears()).append(" años");
-        else if(p.getMonths()>0)
-            dateDiff.append("Hace ").append(p.getMonths()).append(" meses");
-        else if(p.getDays()>0)
-            dateDiff.append("Hace ").append(p.getDays()).append(" días");
-        else if(d.getSeconds()>=60)
-            if(d.getSeconds()>=(60*60))
-                dateDiff.append("Hace ").append(Math.round((float) d.getSeconds() / (60*60))).append(" horas");
-            else
-                dateDiff.append("Hace ").append(Math.round((float) d.getSeconds() / 60)).append(" minutos");
-        else
-            dateDiff.append("Hace ").append(d.getSeconds()).append(" segundos");
-        return dateDiff.toString();
+        return LocalDateUtils.localDateTimeAsRecentTime(pubDate);
     }
 
     public int getApplicationCount(){
