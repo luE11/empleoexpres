@@ -150,8 +150,7 @@ public class JobController {
 
     @PreAuthorize("hasAuthority('PUBLISHER')")
     @GetMapping("/job/{jid}/application/{cid}")
-    public String showJobApplicationDetails(@RequestParam(value = "p", required = false) Integer page,
-                                      @PathVariable(name = "jid") Integer jobId,
+    public String showJobApplicationDetails(@PathVariable(name = "jid") Integer jobId,
                                         @PathVariable(name = "cid") Integer candidateId,
                                       Model model, Authentication authentication){
         User self = getUserFromAuth(authentication);
@@ -160,9 +159,9 @@ public class JobController {
             return "redirect:/search";
         model.addAttribute("user", self);
         model.addAttribute("job", job);
-        model.addAttribute("appDetails", jobService.getApplicationDetails(jobId, page));
+        model.addAttribute("appDetails", jobService.getApplicationDetails(jobId, candidateId));
         return APPLICATION_DETAILS_PAGE;
-    }
+    } // create application details template
 
     @PreAuthorize("hasAuthority('CANDIDATE')")
     @DeleteMapping("/job-application")

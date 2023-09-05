@@ -1,5 +1,6 @@
 package pra.lue11.empleoexpres.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,6 +44,11 @@ public class PersonService {
         if(candidateDTO.getPhoto()!=null && !candidateDTO.getPhoto().isEmpty())
             person.setPhotoUrl(uploadFile("profile_"+user.getEmail(), candidateDTO.getPhoto()));
         personRepository.save(person);
+    }
+
+    public Person getPersonById(int id){
+        return personRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Person with id " +id+" was not found"));
     }
 
     private String uploadFile(String name, MultipartFile file) throws IOException {

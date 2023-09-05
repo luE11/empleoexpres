@@ -37,4 +37,19 @@ public class JobHasCandidate {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    public JobHasCandidate(JobApplicationState state, String companyObservations, Person candidate, Job job) {
+        this.state = state;
+        this.companyObservations = companyObservations;
+        this.job = job;
+        this.person = candidate;
+    }
+
+    public JobHasCandidate(String candidateComment, Person candidate, Job job) {
+        this.state = JobApplicationState.APPLIED;
+        this.candidateComment = candidateComment;
+        this.job = job;
+        this.person = candidate;
+    }
+
+
 }
