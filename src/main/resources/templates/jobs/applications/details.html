@@ -43,11 +43,17 @@
             </table>
             <hr>
             <div class="mt-2">
-                <div th:if="${job.isActive() && appDetails.isNotFinished()}">
+                <div th:if="${job.isActive()}">
                     <form method="POST" th:object="${applicationDTO}"
                           th:action="@{/job/{jid}/application/{cid}(jid=${job.getId()}, cid=${appDetails.getCandidateId()})}" class="my-form">
                         <p class="ms-2 mb-3">Actualice la información actual de la postulación seleccionada</p>
                         <div class="text-center">
+                            <div class="col-md-6 offset-md-3 mb-2">
+                                <div class="form-floating">
+                                    <textarea class="form-control h-25" type="text" rows="5" id="candidateComment" placeholder="Comentarios del candidato" maxlength="500" th:value="${appDetails.getCandidateComment()}" disabled></textarea>
+                                    <label for="candidateComment">Comentarios del candidato</label>
+                                </div>
+                            </div>
                             <div class="mb-2">
                                 <p class="text-secondary m-0">Estado de postulación</p>
                                 <div class="form-check form-check-inline" th:each="jobstate : ${T(pra.lue11.empleoexpres.model.enums.JobApplicationState).values()}">
@@ -67,8 +73,13 @@
                         </div>
                     </form>
                 </div>
-                <div th:unless="${job.isActive() && appDetails.isNotFinished()}">
-                    <p class="text-secondary text-center">Solo consulta...</p>
+                <div th:unless="${job.isActive()}">
+                    <p class="text-secondary text-center">Solo consulta, la oferta de empleo ha sido cerrada</p>
+                    <div>
+                        <p>Estado: <span class="text-secondary" th:text="${appDetails.getState()}"></span></p>
+                        <p>Observaciones de la empresa: <span class="text-secondary" th:text="${appDetails.getCompanyObservations()}"></span></p>
+                        <p>Comentarios del candidato: <span class="text-secondary" th:text="${appDetails.getCandidateComment()}"></span></p>
+                    </div>
                 </div>
             </div>
         </div>
