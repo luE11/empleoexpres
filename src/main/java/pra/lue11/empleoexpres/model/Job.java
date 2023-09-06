@@ -81,6 +81,10 @@ public class Job {
         this.jobMode = jobMode;
     }
 
+    public boolean isActive(){
+        return this.state.compareTo(JobState.ACTIVE)==0;
+    }
+
     public boolean isAllJobMode(){
         return jobMode.compareTo(JobModality.ALL)==0;
     }

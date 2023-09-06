@@ -135,4 +135,9 @@ public class JobService {
     public Person getPersonById(int id){
         return personService.getPersonById(id);
     }
+
+    public PublisherUpdateApplicationDTO getPublisherApplicationDTO(Integer jobId, Integer candidateId) {
+        JobHasCandidate jobHasCandidate = getApplicationDetails(jobId, candidateId);
+        return new PublisherUpdateApplicationDTO(jobHasCandidate.getState().toString(), jobHasCandidate.getCompanyObservations());
+    }
 }

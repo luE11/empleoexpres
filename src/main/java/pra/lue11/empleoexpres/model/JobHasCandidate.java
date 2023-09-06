@@ -51,5 +51,12 @@ public class JobHasCandidate {
         this.person = candidate;
     }
 
+    public boolean isNotFinished(){
+        return state.compareTo(JobApplicationState.FINISHED)!=0;
+    }
+
+    public int getCandidateId(){
+        return this.person.getId();
+    }
 
 }

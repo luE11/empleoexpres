@@ -6,9 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import pra.lue11.empleoexpres.model.Job;
-import pra.lue11.empleoexpres.model.JobHasCandidate;
-import pra.lue11.empleoexpres.model.Person;
 import pra.lue11.empleoexpres.model.enums.JobApplicationState;
 import pra.lue11.empleoexpres.utils.validator.EnumVal;
 

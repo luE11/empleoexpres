@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pra.lue11.empleoexpres.dto.CandidateStudyDTO;
 import pra.lue11.empleoexpres.dto.JobHistoryDTO;
+import pra.lue11.empleoexpres.dto.PublisherUpdateApplicationDTO;
 import pra.lue11.empleoexpres.model.*;
 import pra.lue11.empleoexpres.model.specifications.JobSpecification;
 import pra.lue11.empleoexpres.service.*;
@@ -160,8 +161,25 @@ public class JobController {
         model.addAttribute("user", self);
         model.addAttribute("job", job);
         model.addAttribute("appDetails", jobService.getApplicationDetails(jobId, candidateId));
+        model.addAttribute("applicationDTO", jobService.getPublisherApplicationDTO(jobId, candidateId));
         return APPLICATION_DETAILS_PAGE;
-    } // create application details template
+    }
+
+    @PreAuthorize("hasAuthority('PUBLISHER')")
+    @PostMapping("/job/{jid}/application/{cid}")
+    public String insertJobApplicationDetails(@PathVariable(name = "jid") Integer jobId,
+                                              @PathVariable(name = "cid") Integer candidateId,
+                                              @ModelAttribute(name = "filter") @Valid PublisherUpdateApplicationDTO applicationDTO,
+                                              Model model, Authentication authentication){
+        User self = getUserFromAuth(authentication);
+        Job job = jobService.getById(jobId);
+        if(!self.equals(job.getPublisher().getUser()))
+            return "redirect:/search";
+        jobService.updatePublisherApplication(jobId, candidateId, applicationDTO);
+        // insertar y redirigir a "/job/{jid}/application"
+        return "redirect:/job/"+jobId+"/application";
+    }
+
 
     @PreAuthorize("hasAuthority('CANDIDATE')")
     @DeleteMapping("/job-application")
