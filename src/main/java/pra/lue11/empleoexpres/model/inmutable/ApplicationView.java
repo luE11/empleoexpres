@@ -33,6 +33,8 @@ public class ApplicationView {
     @Enumerated(value = EnumType.STRING)
     @Column(name = "state")
     private JobApplicationState state;
+    @Column(name = "cv_url")
+    private String cvUrl;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     @JsonIgnore

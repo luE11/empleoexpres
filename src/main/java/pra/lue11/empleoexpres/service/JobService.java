@@ -116,11 +116,19 @@ public class JobService {
     }
 
     public void insertCandidateApplication(int jobId, int personId, CandidateInsertApplicationDTO applicationDTO){
-        Job job = getJobById(jobId);
-        Person person = getPersonById(personId);
-        JobHasCandidate jobApplication = applicationDTO.toApplication(job, person);
-        jobApplication.setCandidateComment(applicationDTO.getCandidateComment());
-        jobHasCandidateRepository.save(jobApplication);
+        if(jobHasCandidateRepository.existsById(new JobCandidateId(personId, jobId))){
+            jobHasCandidateRepository.findById(new JobCandidateId(personId, jobId))
+                    .map(jobHasCandidate -> {
+                        jobHasCandidate.setCandidateComment(applicationDTO.getCandidateComment());
+                        jobHasCandidate.setCvUrl(applicationDTO.getCvUrl());
+                        return jobHasCandidateRepository.save(jobHasCandidate);
+                    });
+        }else {
+            Job job = getJobById(jobId);
+            Person person = getPersonById(personId);
+            JobHasCandidate jobApplication = applicationDTO.toApplication(job, person);
+            jobHasCandidateRepository.save(jobApplication);
+        }
     }
 
     public boolean isJobAppliedByCandidate(int candidateId, int jobId){
@@ -139,5 +147,13 @@ public class JobService {
     public PublisherUpdateApplicationDTO getPublisherApplicationDTO(Integer jobId, Integer candidateId) {
         JobHasCandidate jobHasCandidate = getApplicationDetails(jobId, candidateId);
         return new PublisherUpdateApplicationDTO(jobHasCandidate.getState().toString(), jobHasCandidate.getCompanyObservations());
+    }
+
+    public CandidateInsertApplicationDTO getCandidateApplyDTO(int jobId, int candidateId){
+        if(isJobAppliedByCandidate(candidateId, jobId)){
+            JobHasCandidate jobHasCandidate = getApplicationDetails(jobId, candidateId);
+            return new CandidateInsertApplicationDTO(jobHasCandidate.getCandidateComment(), jobHasCandidate.getCvUrl());
+        }
+        return new CandidateInsertApplicationDTO();
     }
 }

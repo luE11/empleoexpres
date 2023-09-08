@@ -10,10 +10,10 @@
     <nav th:replace="~{fragments/loggedin.html :: navbar }"></nav>
     <div class="m-3">
         <a class="btn text-info" onclick="history.back();"><i class="bi bi-arrow-left-square"></i> Volver</a>
-        <h1>Administrar postulación</h1>
+        <h1>Completar postulación</h1>
         <p class="text-secondary">
-            Candidato: <a th:text="${appDetails.getPerson().getFullName()}"
-                th:href="@{/profile(id=${appDetails.getPerson().getUser().getId()})}"></a>
+            Empresa <a th:text="${job.getPublisher().getCompanyName()}"
+                th:href="@{/profile(id=${job.getPublisher().getUser().getId()})}"></a>
         </p>
         <div class="mt-2">
             <table class="table table-borderless border fs-7">
@@ -42,35 +42,42 @@
                 </tr>
             </table>
             <hr>
-            <div class="mt-2">
-                <a th:if="${jobApp.getCvUrl()!=null}"  th:href="'/'+${jobApp.getCvUrl()}" class="d-flex justify-content-between list-group-item-primary" download>
-                    Descargar hoja de vida candidato
-                    <i class="bi bi-download"></i>
-                </a>
+            <div class="mt-2 col-md-6 offset-md-3">
                 <div th:if="${job.isActive()}">
-                    <form method="POST" th:object="${applicationDTO}"
-                          th:action="@{/job/{jid}/application/{cid}(jid=${job.getId()}, cid=${appDetails.getCandidateId()})}" class="my-form">
-                        <p class="ms-2 mb-3">Actualice la información actual de la postulación seleccionada</p>
-                        <div class="text-center">
-                            <div class="col-md-6 offset-md-3 mb-2">
+                    <form th:method="put" th:object="${applyDTO}"
+                          th:action="@{/job/{jid}/apply(jid=${job.getId()})}" class="my-form">
+                        <p class="ms-2 mb-3">Ingresa la información para completar la postulación</p>
+                        <div class="text-center" th:with="candidate=${user.getPerson()}">
+                            <div class="mb-2" th:if="${appDetails}">
                                 <div class="form-floating">
-                                    <textarea class="form-control h-25" type="text" rows="5" id="candidateComment" placeholder="Comentarios del candidato" maxlength="500" th:value="${appDetails.getCandidateComment()}" disabled></textarea>
-                                    <label for="candidateComment">Comentarios del candidato</label>
+                                    <textarea class="form-control h-25" type="text" rows="5" th:value="${appDetails.getCompanyObservations()}" id="profile_description" placeholder="Descripción" disabled></textarea>
+                                    <label for="profile_description">Observaciones de la empresa</label>
                                 </div>
                             </div>
                             <div class="mb-2">
-                                <p class="text-secondary m-0">Estado de postulación</p>
-                                <div class="form-check form-check-inline" th:each="jobstate : ${T(pra.lue11.empleoexpres.model.enums.JobApplicationState).values()}">
-                                    <input class="form-check-input" type="radio" name="state" th:id="${jobstate+'_radio'}" th:field="*{state}" th:value="${jobstate}">
-                                    <label class="form-check-label" th:for="${jobstate+'_radio'}" th:text="${jobstate.getState()}"></label>
+                                <div class="form-floating" th:classappend="${#fields.hasErrors('candidateComment')} ? 'is-invalid':''">
+                                    <textarea class="form-control h-25" type="text" rows="5" id="candidateComment"
+                                              placeholder="Comentarios del candidato" maxlength="200" th:field="*{candidateComment}"
+                                              th:classappend="${#fields.hasErrors('candidateComment')} ? 'is-invalid':''"></textarea>
+                                    <label for="candidateComment">Comentarios del candidato</label>
                                 </div>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('candidateComment')}" th:errors="*{candidateComment}"></div>
                             </div>
-                            <div class="col-md-6 offset-md-3 mb-2">
-                                <div class="form-floating" th:classappend="${#fields.hasErrors('companyObservations')} ? 'is-invalid':''">
-                                    <textarea class="form-control h-25" type="text" rows="5" th:field="*{companyObservations}" id="profile_description" placeholder="Descripción" th:classappend="${#fields.hasErrors('companyObservations')} ? 'is-invalid':''" maxlength="500"></textarea>
-                                    <label for="profile_description">Observaciones de la empresa</label>
+                            <div th:if="${appDetails}">
+                                <p>Estado: <span class="text-secondary" th:text="${appDetails.getState()}"></span></p>
+                            </div>
+                            <div th:if="${candidate.getCvCount()>0}" class="text-start">
+                                <p class="mb-0">Elije la hoja de vida a enviar en la postulación</p>
+                                <p class="text-secondary mb-2">Esta podrá ser modificada posteriormente</p>
+                                <div th:classappend="${#fields.hasErrors('cvUrl')} ? 'is-invalid':''">
+                                    <div class="form-check" th:each="cv,i : ${candidate.getCvs()}">
+                                        <input class="form-check-input" type="radio" name="flexRadioDefault" th:id="${i+'_radio'}" th:field="*{cvUrl}" th:value="${cv}">
+                                        <label class="form-check-label" th:for="${i+'_radio'}">
+                                            <a th:href="'/'+${cv}">Hoja de vida 1</a>
+                                        </label>
+                                    </div>
                                 </div>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('companyObservations')}" th:errors="*{companyObservations}"></div>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('cvUrl')}" th:errors="*{cvUrl}"></div>
                             </div>
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                             <button class="btn btn-lg btn-primary" type="submit">Actualizar</button>

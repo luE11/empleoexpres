@@ -38,6 +38,8 @@ public class CandidateAppliedJobView {
     @Enumerated(value = EnumType.STRING)
     @Column(name = "state")
     private JobApplicationState state;
+    @Column(name = "cv_url")
+    private String cvUrl;
     @Column(name = "company_observations")
     private String companyObservations;
     @Column(name = "candidate_comment")

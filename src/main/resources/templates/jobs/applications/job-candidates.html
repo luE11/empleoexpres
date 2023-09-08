@@ -12,10 +12,11 @@
         <a class="btn text-info" onclick="history.back();"><i class="bi bi-arrow-left-square"></i> Volver</a>
         <h1 th:text="${job.title}"></h1>
         <p class="text-secondary">Candidatos postulados</p>
-        <div class="col-md-8 offset-md-2 mt-2">
+        <div class="col-md-10 offset-md-1 mt-2">
             <table class="table table-light table-striped table-bordered border-secondary-subtle align-middle">
                 <thead>
                 <tr class="table-primary">
+                    <th scope="col">No.</th>
                     <th scope="col">Candidato</th>
                     <th scope="col">Estado</th>
                     <th scope="col">Última actualización</th>
@@ -24,10 +25,15 @@
                 </thead>
                 <tbody class="table-group-divider">
                 <tr th:each="jobApp: ${applications}">
+                    <td th:text="${jobApp.getId()}"></td>
                     <th><span th:text="${jobApp.getName()}"></span></th>
                     <td th:text="${jobApp.getState().getState()}"></td>
                     <td th:text="${jobApp.getLastUpdateTime()}"></td>
                     <td>
+                        <a th:if="${jobApp.getCvUrl()!=null}"  th:href="'/'+${jobApp.getCvUrl()}" class="btn btn-primary d-inline me-2" download>
+                            Descargar CV
+                            <i class="bi bi-download"></i>
+                        </a>
                         <a class="btn btn-info me-2"
                            th:href="@{/job/{jid}/application/{cid}(jid=${job.getId()}, cid=${jobApp.getPersonId()})}">
                             Administrar postulación

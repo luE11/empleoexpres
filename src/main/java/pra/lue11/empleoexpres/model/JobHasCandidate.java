@@ -29,6 +29,8 @@ public class JobHasCandidate {
     @Enumerated(value = EnumType.STRING)
     @Column(name = "state", nullable = false)
     private JobApplicationState state;
+    @Column(name = "cv_url", length = 200, nullable = false)
+    private String cvUrl;
     @Column(name = "company_observations", length = 100)
     private String companyObservations;
     @Column(name = "candidate_comment", length = 200)
@@ -44,8 +46,9 @@ public class JobHasCandidate {
         this.person = candidate;
     }
 
-    public JobHasCandidate(String candidateComment, Person candidate, Job job) {
+    public JobHasCandidate(String candidateComment, String cvUrl, Person candidate, Job job) {
         this.state = JobApplicationState.APPLIED;
+        this.cvUrl = cvUrl;
         this.candidateComment = candidateComment;
         this.job = job;
         this.person = candidate;

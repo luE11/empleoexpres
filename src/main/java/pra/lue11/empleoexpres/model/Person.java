@@ -12,6 +12,7 @@ import pra.lue11.empleoexpres.model.enums.JobModality;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -110,6 +111,17 @@ public class Person {
         if(cv3Url!=null && !cv3Url.isEmpty()) num++;
         return num;
     };
+
+    public List<String> getCvs(){
+        List<String> cvs = new LinkedList<>();
+        if (cv1Url!=null)
+            cvs.add(cv1Url);
+        if (cv2Url!=null)
+            cvs.add(cv2Url);
+        if (cv3Url!=null)
+            cvs.add(cv3Url);
+        return cvs;
+    }
 
     @Override
     public boolean equals(Object object) {
