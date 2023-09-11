@@ -43,7 +43,7 @@
             </table>
             <hr>
             <div class="mt-2">
-                <a th:if="${jobApp.getCvUrl()!=null}"  th:href="'/'+${jobApp.getCvUrl()}" class="d-flex justify-content-between list-group-item-primary" download>
+                <a th:if="${appDetails.getCvUrl()!=null}"  th:href="'/'+${appDetails.getCvUrl()}" class="d-flex justify-content-between list-group-item-primary" download>
                     Descargar hoja de vida candidato
                     <i class="bi bi-download"></i>
                 </a>

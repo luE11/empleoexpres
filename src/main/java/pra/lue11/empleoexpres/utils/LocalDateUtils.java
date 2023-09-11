@@ -14,19 +14,20 @@ public class LocalDateUtils {
         Period p = Period.between(date.toLocalDate(), LocalDate.now());
         Duration d = Duration.between(date, LocalDateTime.now());
         StringBuilder dateDiff = new StringBuilder();
+        dateDiff.append("Hace ");
         if(p.getYears()>0)
-            dateDiff.append("Hace ").append(p.getYears()).append(" años");
+            dateDiff.append(p.getYears()).append(" años");
         else if(p.getMonths()>0)
-            dateDiff.append("Hace ").append(p.getMonths()).append(" meses");
+            dateDiff.append(p.getMonths()).append(" meses");
         else if(p.getDays()>0)
-            dateDiff.append("Hace ").append(p.getDays()).append(" días");
+            dateDiff.append(p.getDays()).append(" días");
         else if(d.getSeconds()>=60)
             if(d.getSeconds()>=(60*60))
-                dateDiff.append("Hace ").append(Math.round((float) d.getSeconds() / (60*60))).append(" horas");
+                dateDiff.append(Math.round((float) d.getSeconds() / (60*60))).append(" horas");
             else
-                dateDiff.append("Hace ").append(Math.round((float) d.getSeconds() / 60)).append(" minutos");
+                dateDiff.append(Math.round((float) d.getSeconds() / 60)).append(" minutos");
         else
-            dateDiff.append("Hace ").append(d.getSeconds()).append(" segundos");
+            dateDiff.append(d.getSeconds()).append(" segundos");
         return dateDiff.toString();
     }
 }
