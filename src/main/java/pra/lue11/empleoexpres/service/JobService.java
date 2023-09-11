@@ -7,8 +7,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import pra.lue11.empleoexpres.dto.CandidateInsertApplicationDTO;
 import pra.lue11.empleoexpres.dto.JobHistoryDTO;
+import pra.lue11.empleoexpres.dto.PublisherUpdateApplicationDTO;
 import pra.lue11.empleoexpres.model.*;
+import pra.lue11.empleoexpres.model.enums.JobApplicationState;
 import pra.lue11.empleoexpres.model.enums.JobState;
 import pra.lue11.empleoexpres.model.inmutable.ApplicationView;
 import pra.lue11.empleoexpres.model.inmutable.CandidateAppliedJobView;
@@ -36,6 +39,7 @@ public class JobService {
     private CandidateAppliedJobRepository candidateAppliedJobRepository;
     private JobHasCandidateRepository jobHasCandidateRepository;
     private ApplicationRepository applicationRepository;
+    private PersonService personService;
 
     public void insertJobHistory(JobHistoryDTO jobHistoryDTO, Person candidate){
         JobHistory jobHistory = jobHistoryDTO.generateJobHistory();
@@ -104,7 +108,52 @@ public class JobService {
                         " and person id "+personId+" was not found"));
     }
 
+    public void updatePublisherApplication(int jobId, int personId, PublisherUpdateApplicationDTO applicationDTO){
+        JobHasCandidate jobApplication = getApplicationDetails(jobId, personId);
+        jobApplication.setState(JobApplicationState.valueOf(applicationDTO.getState()));
+        jobApplication.setCompanyObservations(applicationDTO.getCompanyObservations());
+        jobHasCandidateRepository.save(jobApplication);
+    }
+
+    public void insertCandidateApplication(int jobId, int personId, CandidateInsertApplicationDTO applicationDTO){
+        if(jobHasCandidateRepository.existsById(new JobCandidateId(personId, jobId))){
+            jobHasCandidateRepository.findById(new JobCandidateId(personId, jobId))
+                    .map(jobHasCandidate -> {
+                        jobHasCandidate.setCandidateComment(applicationDTO.getCandidateComment());
+                        jobHasCandidate.setCvUrl(applicationDTO.getCvUrl());
+                        return jobHasCandidateRepository.save(jobHasCandidate);
+                    });
+        }else {
+            Job job = getJobById(jobId);
+            Person person = getPersonById(personId);
+            JobHasCandidate jobApplication = applicationDTO.toApplication(job, person);
+            jobHasCandidateRepository.save(jobApplication);
+        }
+    }
+
     public boolean isJobAppliedByCandidate(int candidateId, int jobId){
         return jobHasCandidateRepository.existsById(new JobCandidateId(candidateId, jobId));
+    }
+
+    public Job getJobById(int id){
+        return jobRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Job with id " +id+" was not found"));
+    }
+
+    public Person getPersonById(int id){
+        return personService.getPersonById(id);
+    }
+
+    public PublisherUpdateApplicationDTO getPublisherApplicationDTO(Integer jobId, Integer candidateId) {
+        JobHasCandidate jobHasCandidate = getApplicationDetails(jobId, candidateId);
+        return new PublisherUpdateApplicationDTO(jobHasCandidate.getState().toString(), jobHasCandidate.getCompanyObservations());
+    }
+
+    public CandidateInsertApplicationDTO getCandidateApplyDTO(int jobId, int candidateId){
+        if(isJobAppliedByCandidate(candidateId, jobId)){
+            JobHasCandidate jobHasCandidate = getApplicationDetails(jobId, candidateId);
+            return new CandidateInsertApplicationDTO(jobHasCandidate.getCandidateComment(), jobHasCandidate.getCvUrl());
+        }
+        return new CandidateInsertApplicationDTO();
     }
 }

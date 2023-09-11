@@ -29,6 +29,8 @@ public class JobHasCandidate {
     @Enumerated(value = EnumType.STRING)
     @Column(name = "state", nullable = false)
     private JobApplicationState state;
+    @Column(name = "cv_url", length = 200, nullable = false)
+    private String cvUrl;
     @Column(name = "company_observations", length = 100)
     private String companyObservations;
     @Column(name = "candidate_comment", length = 200)
@@ -36,5 +38,28 @@ public class JobHasCandidate {
     @Column(name = "updated_at")
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public JobHasCandidate(JobApplicationState state, String companyObservations, Person candidate, Job job) {
+        this.state = state;
+        this.companyObservations = companyObservations;
+        this.job = job;
+        this.person = candidate;
+    }
+
+    public JobHasCandidate(String candidateComment, String cvUrl, Person candidate, Job job) {
+        this.state = JobApplicationState.APPLIED;
+        this.cvUrl = cvUrl;
+        this.candidateComment = candidateComment;
+        this.job = job;
+        this.person = candidate;
+    }
+
+    public boolean isNotFinished(){
+        return state.compareTo(JobApplicationState.FINISHED)!=0;
+    }
+
+    public int getCandidateId(){
+        return this.person.getId();
+    }
 
 }

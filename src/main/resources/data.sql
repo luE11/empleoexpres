@@ -9,14 +9,14 @@ CREATE VIEW candidate_related_studies
 CREATE VIEW candidate_applied_jobs
     AS SELECT row_number() over (order by j.pub_date) id, j.title, +
     j.job_mode, jc.state, jc.company_observations, p.company_name, +
-    jc.candidate_comment, jc.updated_at, jc.person_id, j.job_id
+    jc.candidate_comment, jc.cv_url, jc.updated_at, jc.person_id, j.job_id
             FROM jobs_has_candidates jc, jobs j, publishers p
             WHERE jc.job_id=j.job_id AND j.publisher_id=p.publisher_id;
 
 -- applications view
 CREATE VIEW applications
     AS SELECT row_number() over (order by p.person_id) id, CONCAT(p.first_name, ' ', p.last_name) as name,
-           	jc.state, jc.updated_at, jc.job_id, p.person_id
+           	jc.state, jc.cv_url, jc.updated_at, jc.job_id, p.person_id
                FROM jobs_has_candidates jc, persons p
                WHERE jc.person_id=p.person_id;
 
@@ -93,6 +93,6 @@ INSERT INTO `jobs` (`description`, `job_mode`, `pub_date`, `salary`, `state`, `t
 ('Distinctio quia molestias est tenetur ex dicta. Et dolor aut sunt molestias et. Est nisi quo quae.','FACETOFACE','2023-08-17 11:13:01.000000',3900082,'ACTIVE','Soluta velit cupiditate beatae laborum eveniet quas.',0, 36, 3, 3),
 ('Qui cupiditate voluptate beatae molestiae voluptatem ipsa. Unde qui impedit pariatur ratione ex officia minima aut. Est quo consectetur amet repellat.','HYBRID','2023-08-17 11:13:01.000000',8728000,'ACTIVE','Et nihil reiciendis et fugit sed.',0, 35, 3, 3);
 
-INSERT INTO jobs_has_candidates (job_id, person_id, candidate_comment, company_observations, state, updated_at)
+INSERT INTO jobs_has_candidates (job_id, person_id, candidate_comment, company_observations, state, cv_url, updated_at)
     VALUES ('1', '1', 'Buenas, estoy interesado en el puesto, creo que soy un candidato ideal y bla bla bla lorem ipsum dolorem. También puede copiar y pegar bloques de texto de un documento que tengas ya escrito.',
-    NULL, 'APPLIED', '2023-08-31 10:50:00.000000');
+    NULL, 'APPLIED', 'files-upload/cv1_l@gmail.com.pdf', '2023-08-31 10:50:00.000000');

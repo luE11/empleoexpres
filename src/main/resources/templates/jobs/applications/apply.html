@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>EmpleoExprés | Postulación</title>
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}"/>
+    <link th:rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body>
+    <nav th:replace="~{fragments/loggedin.html :: navbar }"></nav>
+    <div class="m-3">
+        <a class="btn text-info" onclick="history.back();"><i class="bi bi-arrow-left-square"></i> Volver</a>
+        <h1>Completar postulación</h1>
+        <p class="text-secondary">
+            Empresa <a th:text="${job.getPublisher().getCompanyName()}"
+                th:href="@{/profile(id=${job.getPublisher().getUser().getId()})}"></a>
+        </p>
+        <div class="mt-2">
+            <table class="table table-borderless border fs-7">
+                <tr>
+                    <th class="table-primary">Nombre oferta</th>
+                    <td th:text="${job.getTitle()}" class="border-end table-primary fw-medium"></td>
+                    <th>Modalidad</th>
+                    <td th:text="${job.getJobMode().getModality()}" class="border-end"></td>
+                    <th>Estado</th>
+                    <td th:text="${job.getState().getState()}" class="border-end"></td>
+                    <th>Salario</th>
+                    <td class="border-end"><span th:text="${#numbers.formatInteger(job.getSalary(),0,'POINT')}"></span> COP</td>
+                </tr>
+                <tr>
+                    <th>Experiencia requerida</th>
+                    <td class="border-end"><span th:text="${job.getYearsOfExperience() == 0 ? '0' : job.getYearsOfExperience()}"></span> años</td>
+                    <th>Ubicación</th>
+                    <td class="border-end">
+                        <span th:if="${job.getLocation()!=null}" th:text="${job.getLocation().getName()}"></span>
+                        <span th:unless="${job.getLocation()!=null}">No especificada</span>
+                    </td>
+                    <th>Profesión relacionada</th>
+                    <td th:text="${job.getProfession().getCertificateName()}" class="border-end"></td>
+                    <th>Fecha de publicación</th>
+                    <td th:text="${job.getPubDateTime()}" class="border-end"></td>
+                </tr>
+            </table>
+            <hr>
+            <div class="mt-2 col-md-6 offset-md-3">
+                <div th:if="${job.isActive()}">
+                    <form th:method="put" th:object="${applyDTO}"
+                          th:action="@{/job/{jid}/apply(jid=${job.getId()})}" class="my-form">
+                        <p class="ms-2 mb-3">Ingresa la información para completar la postulación</p>
+                        <div class="text-center" th:with="candidate=${user.getPerson()}">
+                            <div class="mb-2" th:if="${appDetails}">
+                                <div class="form-floating">
+                                    <textarea class="form-control h-25" type="text" rows="5" th:value="${appDetails.getCompanyObservations()}" id="profile_description" placeholder="Descripción" disabled></textarea>
+                                    <label for="profile_description">Observaciones de la empresa</label>
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <div class="form-floating" th:classappend="${#fields.hasErrors('candidateComment')} ? 'is-invalid':''">
+                                    <textarea class="form-control h-25" type="text" rows="5" id="candidateComment"
+                                              placeholder="Comentarios del candidato" maxlength="200" th:field="*{candidateComment}"
+                                              th:classappend="${#fields.hasErrors('candidateComment')} ? 'is-invalid':''"></textarea>
+                                    <label for="candidateComment">Comentarios del candidato</label>
+                                </div>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('candidateComment')}" th:errors="*{candidateComment}"></div>
+                            </div>
+                            <div th:if="${appDetails}">
+                                <p>Estado: <span class="text-secondary" th:text="${appDetails.getState()}"></span></p>
+                            </div>
+                            <div th:if="${candidate.getCvCount()>0}" class="text-start">
+                                <p class="mb-0">Elije la hoja de vida a enviar en la postulación</p>
+                                <p class="text-secondary mb-2">Esta podrá ser modificada posteriormente</p>
+                                <div th:classappend="${#fields.hasErrors('cvUrl')} ? 'is-invalid':''">
+                                    <div class="form-check" th:each="cv,i : ${candidate.getCvs()}">
+                                        <input class="form-check-input" type="radio" name="flexRadioDefault" th:id="${i+'_radio'}" th:field="*{cvUrl}" th:value="${cv}">
+                                        <label class="form-check-label" th:for="${i+'_radio'}">
+                                            <a th:href="'/'+${cv}">Hoja de vida 1</a>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('cvUrl')}" th:errors="*{cvUrl}"></div>
+                            </div>
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <button class="btn btn-lg btn-primary" type="submit">Actualizar</button>
+                        </div>
+                    </form>
+                </div>
+                <div th:unless="${job.isActive()}">
+                    <p class="text-secondary text-center">Solo consulta, la oferta de empleo ha sido cerrada</p>
+                    <div>
+                        <p>Estado: <span class="text-secondary" th:text="${appDetails.getState()}"></span></p>
+                        <p>Observaciones de la empresa: <span class="text-secondary" th:text="${appDetails.getCompanyObservations()}"></span></p>
+                        <p>Comentarios del candidato: <span class="text-secondary" th:text="${appDetails.getCandidateComment()}"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script th:src="@{/webjars/jquery/3.6.1/jquery.min.js}"></script>
+    <script th:src="@{/webjars/popper.js/2.11.7/umd/popper.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.min.js}"></script>
+</body>
+</html>

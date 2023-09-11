@@ -46,8 +46,13 @@
                     <div class="card-body">
                         <p class="card-text with-breaklines" th:text="${job.getDescription()}"></p>
                     </div>
-                    <div class="card-footer" sec:authorize="hasAuthority('CANDIDATE')" th:if="${!applied}">
-                        <a class="btn btn-primary" th:if="${!job.isSoftDeleted()}" th:href="@{/job/apply/{id}(id=${job.getId()})}">Aplicar</a>
+                    <div class="card-footer" sec:authorize="hasAuthority('CANDIDATE')">
+                        <div th:if="${applied}">
+                            <a class="btn btn-info" th:href="@{/job/apply/{jid}(jid=${job.getId()})}">Consultar/editar postulación</a>
+                        </div>
+                        <div th:unless="${applied}">
+                            <a class="btn btn-primary" th:if="${!job.isSoftDeleted()}" th:href="@{/job/apply/{jid}(jid=${job.getId()})}">Aplicar</a>
+                        </div>
                     </div>
                 </div>
             </div>

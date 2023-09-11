@@ -34,7 +34,13 @@
                     <td th:text="${offer.getUpdatedAtAsString()}"></td>
                     <td>
                         <form th:action="@{/job-application(jid=${offer.getJobId()},cid=${offer.getPersonId()})}" th:method="delete">
-                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                            <div class="btn-group" role="group" aria-label="Basic example">
+                                <a th:if="${offer.getCvUrl()!=null}" th:href="'/'+${offer.getCvUrl()}" class="btn btn-primary" download>
+                                    CV
+                                    <i class="bi bi-download"></i>
+                                </a>
+                                <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i></button>
+                            </div>
                         </form>
                     </td>
                 </tr>
