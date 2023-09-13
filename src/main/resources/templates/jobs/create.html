@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>EmpleoExprés | Empleos</title>
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}"/>
+    <link th:rel="stylesheet" th:href="@{/css/styles.css}"/>
+    <link th:rel="stylesheet" th:href="@{/css/bootstrap-select.min.css}" />
+</head>
+<body>
+    <nav th:replace="~{fragments/loggedin.html :: navbar }"></nav>
+    <div class="m-2">
+        <a class="btn text-info" onclick="history.back();"><i class="bi bi-arrow-left-square"></i> Volver</a>
+        <div class="card text-bg-light col-md-10 my-2 offset-md-1 px-5">
+            <div class="card-body">
+                <form method="POST"
+                      th:action="@{/job}"
+                      th:object="${jobDTO}" class="my-form">
+                    <h2 class="text-center my-3">Crear empleo</h2>
+                    <div class="text-center">
+                        <div class="col-md-8 offset-md-2 mb-2">
+                            <div class="form-floating" th:classappend="${#fields.hasErrors('title')} ? 'is-invalid':''">
+                                <input th:field="*{title}" id="title" type="text" class="form-control" placeholder="Título (*)" th:classappend="${#fields.hasErrors('title')} ? 'is-invalid':''" />
+                                <label for="title">Título (*)</label>
+                            </div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                        </div>
+                        <div class="col-md-8 offset-md-2">
+                            <div class="form-floating" th:classappend="${#fields.hasErrors('description')} ? 'is-invalid':''">
+                                <textarea th:field="*{description}" id="description" class="form-control" placeholder="Descripción (*)" th:classappend="${#fields.hasErrors('description')} ? 'is-invalid':''" rows="4"></textarea>
+                                <label for="description">Description (*)</label>
+                            </div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+                        </div>
+                        <div class="row g-3 my-2">
+                            <div class="col-md-6">
+                                <div class="form-floating" th:classappend="${#fields.hasErrors('state')} ? 'is-invalid':''">
+                                    <select th:field="*{state}" class="form-select" id="state" th:classappend="${#fields.hasErrors('state')} ? 'is-invalid':''">
+                                        <option th:each="jobstate: ${T(pra.lue11.empleoexpres.model.enums.JobState).values()}" th:value="${jobstate.name()}" th:text="${jobstate.getState()}"></option>
+                                    </select>
+                                    <label for="state">Estado del empleo (*)</label>
+                                </div>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('state')}" th:errors="*{state}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating" th:classappend="${#fields.hasErrors('salary')} ? 'is-invalid':''">
+                                    <input id="salary" th:classappend="${#fields.hasErrors('salary')} ? 'is-invalid':''" class="form-control" type="text" th:field="*{salary}" placeholder="Salario (*)" step="0.1" min="0">
+                                    <label for="salary">Salario (*)</label>
+                                </div>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('salary')}" th:errors="*{salary}"></div>
+                            </div>
+                        </div>
+                        <div class="row g-3 my-2">
+                            <div class="col-md-6">
+                                <div class="form-floating" th:classappend="${#fields.hasErrors('yearsOfExperience')} ? 'is-invalid':''">
+                                    <input id="yearsOfExperience" th:classappend="${#fields.hasErrors('yearsOfExperience')} ? 'is-invalid':''" class="form-control" type="number" th:field="*{yearsOfExperience}" placeholder="Años de experiencia (*)" step="0.1" min="0">
+                                    <label for="yearsOfExperience">Años de experiencia (*)</label>
+                                </div>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('yearsOfExperience')}" th:errors="*{salary}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="row" th:classappend="${#fields.hasErrors('professionId')} ? 'is-invalid':''">
+                                    <div class="col">
+                                        <label class="py-2">Profesión (*)</label>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <select th:field="*{professionId}" class="selectpicker form-control" title="Seleccione una profesión" th:classappend="${#fields.hasErrors('professionId')} ? 'is-invalid':''" data-live-search="true">
+                                                <option th:each="study:${studies}" th:value="${study.getId()}" th:text="${study.getCertificateName()}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('professionId')}" th:errors="*{professionId}"></div>
+                            </div>
+                        </div>
+                        <div class="row g-3 my-2">
+                            <div class="col-md-6">
+                                <div class="form-floating" th:classappend="${#fields.hasErrors('jobMode')} ? 'is-invalid':''">
+                                    <select th:field="*{jobMode}" class="form-select" id="jobMode" th:classappend="${#fields.hasErrors('jobMode')} ? 'is-invalid':''">
+                                        <option disabled value="" selected="selected">Seleccione una modalidad</option>
+                                        <option th:each="modality: ${T(pra.lue11.empleoexpres.model.enums.JobModality).values()}" th:value="${modality.name()}" th:text="${modality.getModality()}"></option>
+                                    </select>
+                                    <label for="jobMode">Modalidad (*)</label>
+                                </div>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('jobMode')}" th:errors="*{jobMode}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="row" th:classappend="${#fields.hasErrors('placeId')} ? 'is-invalid':''">
+                                    <div class="col">
+                                        <label class="py-2">Ciudad (*)</label>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <select th:field="*{placeId}" class="selectpicker form-control" title="Seleccione una ciudad" th:classappend="${#fields.hasErrors('placeId')} ? 'is-invalid':''" data-live-search="true">
+                                                <option th:each="place:${places}" th:value="${place.getId()}" th:text="${place.getName()}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('placeId')}" th:errors="*{placeId}"></div>
+                            </div>
+                        </div>
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <button class="btn btn-lg btn-primary mt-2" type="submit">Registrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script th:src="@{/webjars/jquery/3.6.1/jquery.min.js}"></script>
+    <script th:src="@{/webjars/popper.js/2.11.7/umd/popper.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/bootstrap-select.min.js}"></script>
+</body>
+</html>

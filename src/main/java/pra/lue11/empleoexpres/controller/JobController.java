@@ -15,10 +15,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import pra.lue11.empleoexpres.dto.CandidateInsertApplicationDTO;
-import pra.lue11.empleoexpres.dto.CandidateStudyDTO;
-import pra.lue11.empleoexpres.dto.JobHistoryDTO;
-import pra.lue11.empleoexpres.dto.PublisherUpdateApplicationDTO;
+import pra.lue11.empleoexpres.dto.*;
 import pra.lue11.empleoexpres.model.*;
 import pra.lue11.empleoexpres.model.specifications.JobSpecification;
 import pra.lue11.empleoexpres.service.*;
@@ -33,51 +30,16 @@ import java.util.Objects;
 @AllArgsConstructor
 public class JobController {
     private static final String SEARCH_JOB_PAGE = "jobs/search.html";
-    private final String PROFILE_TEMPLATE = "user/my-profile";
     private final String CONSULT_JOB_TEMPLATE = "jobs/consult.html";
     private final String MY_JOBS_PAGE = "jobs/my-jobs";
-    private final String JOB_CANDIDATES_PAGE = "jobs/applications/job-candidates";
-    private final String APPLICATION_DETAILS_PAGE = "jobs/applications/details";
-    private final String APPLICATION_APPLY_PAGE = "jobs/applications/apply";
+
+    private final String CREATE_JOB_TEMPLATE = "jobs/create.html";
 
     private UserService userService;
     private JobService jobService;
     private StudyService studyService;
     private PlaceService placeService;
     private PublisherService publisherService;
-
-    @PreAuthorize("hasAnyAuthority('CANDIDATE', 'ADMIN')")
-    @PostMapping(value = "/job-history")
-    public String insertJobHistory(@Valid @ModelAttribute(name = "newJhistory") JobHistoryDTO newJhistory, BindingResult result, Model model, Authentication authentication, RedirectAttributes redirectAttributes) {
-        User self = getUserFromAuth(authentication);
-        model.addAttribute("user", self);
-        model.addAttribute("candidate", self.getPerson());
-        model.addAttribute("candidateStudy", new CandidateStudyDTO());
-        if(result.hasErrors()){
-            model.addAttribute("jobOffcanvas", "");
-            model.addAttribute("newJhistory", newJhistory);
-            return PROFILE_TEMPLATE;
-        }else{
-            jobService.insertJobHistory(newJhistory, self.getPerson());
-            model.addAttribute("newJhistory", new JobHistoryDTO());
-            redirectAttributes.addFlashAttribute("successMessage", "Empleo insertado exitosamente");
-        }
-        return "redirect:/profile";
-    }
-
-    @PreAuthorize("hasAnyAuthority('CANDIDATE', 'ADMIN')")
-    @DeleteMapping(value = "/job-history/{jobHistoryId}")
-    public String deleteJobHistory(@PathVariable(name = "jobHistoryId") Integer jobHistoryId, Model model, Authentication authentication, RedirectAttributes redirectAttributes) {
-        User self = getUserFromAuth(authentication);
-        model.addAttribute("user", self);
-        model.addAttribute("candidate", self.getPerson());
-        jobService.deleteJobHistory(jobHistoryId, self.getPerson());
-        model.addAttribute("newJhistory", new JobHistoryDTO());
-        model.addAttribute("candidateStudy", new CandidateStudyDTO());
-        model.addAttribute("studies", studyService.getAllStudies());
-        redirectAttributes.addFlashAttribute("successMessage", "Empleo eliminado exitosamente");
-        return "redirect:/profile";
-    }
 
     @RequestMapping(value = "/search", method = { RequestMethod.GET, RequestMethod.POST })
     public String showSearchJobPage(@ModelAttribute(name = "filter") @Nullable JobSpecification specification,
@@ -136,62 +98,6 @@ public class JobController {
         return MY_JOBS_PAGE;
     }
 
-    @PreAuthorize("hasAuthority('PUBLISHER')")
-    @GetMapping("/job/{jid}/application")
-    public String showJobApplications(@RequestParam(value = "p", required = false) Integer page,
-                                      @PathVariable(name = "jid") Integer jobId,
-                                      Model model, Authentication authentication){
-        User self = getUserFromAuth(authentication);
-        Job job = jobService.getById(jobId);
-        if(!self.equals(job.getPublisher().getUser()))
-            return "redirect:/search";
-        model.addAttribute("user", self);
-        model.addAttribute("job", job);
-        model.addAttribute("applications", jobService.getJobApplications(jobId, page));
-        return JOB_CANDIDATES_PAGE;
-    }
-
-    @PreAuthorize("hasAuthority('PUBLISHER')")
-    @GetMapping("/job/{jid}/application/{cid}")
-    public String showJobApplicationDetails(@PathVariable(name = "jid") Integer jobId,
-                                        @PathVariable(name = "cid") Integer candidateId,
-                                      Model model, Authentication authentication){
-        User self = getUserFromAuth(authentication);
-        Job job = jobService.getById(jobId);
-        if(!self.equals(job.getPublisher().getUser()))
-            return "redirect:/search";
-        model.addAttribute("user", self);
-        model.addAttribute("job", job);
-        model.addAttribute("appDetails", jobService.getApplicationDetails(jobId, candidateId));
-        model.addAttribute("applicationDTO", jobService.getPublisherApplicationDTO(jobId, candidateId));
-        return APPLICATION_DETAILS_PAGE;
-    }
-
-    @PreAuthorize("hasAuthority('PUBLISHER')")
-    @PostMapping("/job/{jid}/application/{cid}")
-    public String insertJobApplicationDetails(@PathVariable(name = "jid") Integer jobId,
-                                              @PathVariable(name = "cid") Integer candidateId,
-                                              @ModelAttribute(name = "filter") @Valid PublisherUpdateApplicationDTO applicationDTO,
-                                              Model model, Authentication authentication){
-        User self = getUserFromAuth(authentication);
-        Job job = jobService.getById(jobId);
-        if(!self.equals(job.getPublisher().getUser()))
-            return "redirect:/search";
-        jobService.updatePublisherApplication(jobId, candidateId, applicationDTO);
-        return "redirect:/job/"+jobId+"/application";
-    }
-
-
-    @PreAuthorize("hasAuthority('CANDIDATE')")
-    @DeleteMapping("/job-application")
-    public String deleteJobApplication(@RequestParam(value = "jid") Integer jobId,
-                                       @RequestParam(value = "cid") Integer candidateId,
-                                       RedirectAttributes redirectAttributes){
-        jobService.deleteJobApplication(jobId, candidateId);
-        redirectAttributes.addFlashAttribute("flashMessage", "Aplicación eliminada exitosamente!");
-        return "redirect:/my-jobs";
-    }
-
     @PreAuthorize("hasAnyAuthority('PUBLISHER', 'ADMIN')")
     @DeleteMapping("/job")
     public String deleteJob(@RequestParam(value = "id") Integer jobId,
@@ -201,44 +107,33 @@ public class JobController {
         return "redirect:/my-jobs";
     }
 
-    @PreAuthorize("hasAuthority('CANDIDATE')")
-    @GetMapping("/job/apply/{jid}")
-    public String getCandidateApplicationPage(@PathVariable(name = "jid") Integer jobId,
-                                              Model model, Authentication authentication){
+    @PreAuthorize("hasAuthority('PUBLISHER')")
+    @GetMapping("/job")
+    public String showCreateJobPage(Authentication authentication, Model model){
         User self = getUserFromAuth(authentication);
-        Job job = jobService.getById(jobId);
         model.addAttribute("user", self);
-        model.addAttribute("job", job);
-        if(jobService.isJobAppliedByCandidate(self.getPerson().getId(), jobId))
-            model.addAttribute("appDetails", jobService.getApplicationDetails(jobId, self.getPerson().getId()));
-        model.addAttribute("applyDTO", jobService.getCandidateApplyDTO(jobId, self.getPerson().getId()));
-        return APPLICATION_APPLY_PAGE;
+        model.addAttribute("jobDTO", new JobCreationDTO());
+        model.addAttribute("studies", getAllProfessions());
+        model.addAttribute("places", getAllPlaces());
+        return CREATE_JOB_TEMPLATE;
     }
 
-    @PreAuthorize("hasAuthority('CANDIDATE')")
-    @PutMapping("/job/{jid}/apply")
-    public String insertCandidateApplication(@PathVariable(name = "jid") Integer jobId,
-                                             @Valid @ModelAttribute(name = "applyDTO") CandidateInsertApplicationDTO applyDTO,
-                                             BindingResult result, Authentication authentication, Model model){
-        if(!result.hasFieldErrors()){
-            User self = getUserFromAuth(authentication);
-            jobService.insertCandidateApplication(jobId, self.getPerson().getId(), applyDTO);
-            return "redirect:/job/apply/"+jobId;
-        }else {
-            User self = getUserFromAuth(authentication);
-            Job job = jobService.getById(jobId);
+    @PreAuthorize("hasAuthority('PUBLISHER')")
+    @PostMapping("/job")
+    public String insertJob(@ModelAttribute(name = "jobDTO") @Valid JobCreationDTO jobCreationDTO,
+                            BindingResult result, Model model, Authentication authentication, RedirectAttributes redirectAttributes){
+        User self = getUserFromAuth(authentication);
+        if(result.hasErrors()){
             model.addAttribute("user", self);
-            model.addAttribute("job", job);
-            if(jobService.isJobAppliedByCandidate(self.getPerson().getId(), jobId))
-                model.addAttribute("appDetails", jobService.getApplicationDetails(jobId, self.getPerson().getId()));
-            model.addAttribute("applyDTO", applyDTO);
-            return APPLICATION_APPLY_PAGE;
+            model.addAttribute("jobDTO", jobCreationDTO);
+            model.addAttribute("studies", getAllProfessions());
+            model.addAttribute("places", getAllPlaces());
+            return CREATE_JOB_TEMPLATE;
+        }else {
+            jobService.insertJob(jobCreationDTO, self.getPublisher());
+            redirectAttributes.addFlashAttribute("successMessage", "Empleo insertado exitosamente");
+            return "redirect:/my-jobs";
         }
-    }
-
-    private Person getPersonFromAuth(Authentication authentication){
-        User user = userService.findUserByEmail(authentication.getName()).orElseThrow(() -> new EntityNotFoundException("Logged user not found"));
-        return user.getPerson();
     }
 
     private User getUserFromAuth(Authentication authentication) {
@@ -255,5 +150,10 @@ public class JobController {
 
     private List<Publisher> getAllPublishers(){
         return publisherService.getAllPublishers();
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }
 }
