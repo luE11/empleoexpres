@@ -81,6 +81,16 @@ public class Job {
         this.jobMode = jobMode;
     }
 
+    public Job(String title, JobState state, String description, LocalDateTime pubDate, Double salary, Double yearsOfExperience, JobModality jobMode) {
+        this.title = title;
+        this.state = state;
+        this.description = description;
+        this.pubDate = pubDate;
+        this.salary = salary;
+        this.yearsOfExperience = yearsOfExperience;
+        this.jobMode = jobMode;
+    }
+
     public boolean isActive(){
         return this.state.compareTo(JobState.ACTIVE)==0;
     }

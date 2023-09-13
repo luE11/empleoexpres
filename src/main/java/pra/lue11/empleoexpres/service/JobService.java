@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import pra.lue11.empleoexpres.dto.CandidateInsertApplicationDTO;
+import pra.lue11.empleoexpres.dto.JobCreationDTO;
 import pra.lue11.empleoexpres.dto.JobHistoryDTO;
 import pra.lue11.empleoexpres.dto.PublisherUpdateApplicationDTO;
 import pra.lue11.empleoexpres.model.*;
@@ -40,6 +41,8 @@ public class JobService {
     private JobHasCandidateRepository jobHasCandidateRepository;
     private ApplicationRepository applicationRepository;
     private PersonService personService;
+    private PlaceService placeService;
+    private StudyService studyService;
 
     public void insertJobHistory(JobHistoryDTO jobHistoryDTO, Person candidate){
         JobHistory jobHistory = jobHistoryDTO.generateJobHistory();
@@ -129,6 +132,16 @@ public class JobService {
             JobHasCandidate jobApplication = applicationDTO.toApplication(job, person);
             jobHasCandidateRepository.save(jobApplication);
         }
+    }
+
+    public void insertJob(JobCreationDTO jobCreationDTO, Publisher publisher){
+        Place place = placeService.getPlaceById(jobCreationDTO.getPlaceId());
+        Study profession = studyService.getStudyById(jobCreationDTO.getProfessionId());
+        Job newJob = jobCreationDTO.toJob();
+        newJob.setPublisher(publisher);
+        newJob.setLocation(place);
+        newJob.setProfession(profession);
+        jobRepository.save(newJob);
     }
 
     public boolean isJobAppliedByCandidate(int candidateId, int jobId){

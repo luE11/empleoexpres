@@ -13,6 +13,7 @@
     </th:block>
     <div class="m-2">
         <a class="btn text-info" onclick="history.back();"><i class="bi bi-arrow-left-square"></i> Volver</a>
+        <a class="btn btn-primary float-end me-2" th:href="@{/job}">Crear nuevo</a>
         <div th:replace="~{fragments/my-jobs-list.html :: (${user.isPublisher()} ? publisher-job-list : candidate-job-list)}"></div>
     </div>
     <script th:src="@{/webjars/jquery/3.6.1/jquery.min.js}"></script>

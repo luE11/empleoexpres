@@ -57,4 +57,8 @@ public class StudyService {
                 .orElseThrow(() -> new EntityNotFoundException("Study not found"));
     }
 
+    public Study getStudyById(Integer professionId) {
+        return studyRepository.findById(professionId)
+                .orElseThrow(() -> new EntityNotFoundException("Study not found"));
+    }
 }

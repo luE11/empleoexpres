@@ -24,4 +24,8 @@ public class PlaceService {
     public List<Place> getAllPlaces(){
         return placeRepository.findAll();
     }
+
+    public Place getPlaceById(Integer placeId) {
+        return placeId!=null ? placeRepository.findById(placeId).orElse(null) : null;
+    }
 }
