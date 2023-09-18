@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import pra.lue11.empleoexpres.dto.JobDTO;
 import pra.lue11.empleoexpres.model.enums.JobModality;
 import pra.lue11.empleoexpres.model.enums.JobState;
 import pra.lue11.empleoexpres.utils.LocalDateUtils;
@@ -81,16 +82,6 @@ public class Job {
         this.jobMode = jobMode;
     }
 
-    public Job(String title, JobState state, String description, LocalDateTime pubDate, Double salary, Double yearsOfExperience, JobModality jobMode) {
-        this.title = title;
-        this.state = state;
-        this.description = description;
-        this.pubDate = pubDate;
-        this.salary = salary;
-        this.yearsOfExperience = yearsOfExperience;
-        this.jobMode = jobMode;
-    }
-
     public boolean isActive(){
         return this.state.compareTo(JobState.ACTIVE)==0;
     }
@@ -113,5 +104,19 @@ public class Job {
 
     public int getApplicationCount(){
         return this.candidates.size();
+    }
+
+    public void updateFromDto(JobDTO jobDTO){
+        this.title = jobDTO.getTitle();
+        this.state = JobState.valueOf(jobDTO.getState());
+        this.description = jobDTO.getDescription();
+        this.salary = jobDTO.getSalary();
+        this.yearsOfExperience = jobDTO.getYearsOfExperience();
+        this.jobMode = JobModality.valueOf(jobDTO.getJobMode());
+    }
+
+    public JobDTO getAsDto(){
+        return new JobDTO(title, state.getState(), description, salary,
+                yearsOfExperience, jobMode.getModality(), location.getId(), profession.getId());
     }
 }
