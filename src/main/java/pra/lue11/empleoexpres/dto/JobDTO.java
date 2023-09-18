@@ -27,7 +27,7 @@ public class JobDTO {
     @EnumVal(enumClass = JobState.class, message = "Elija un estado")
     protected String state = JobState.ACTIVE.toString();
     @NotEmpty
-    @Size(max = 300)
+    @Size(max = 1000)
     protected String description;
     @NotNull
     @Min(0)

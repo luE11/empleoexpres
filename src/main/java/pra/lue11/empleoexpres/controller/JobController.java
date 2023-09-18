@@ -145,6 +145,7 @@ public class JobController {
         if(!self.getPublisher().equals(job.getPublisher()))
             return "redirect:/my-jobs";
         model.addAttribute("user", self);
+        model.addAttribute("jobId", id);
         model.addAttribute("jobDTO", job.getAsDto());
         model.addAttribute("studies", getAllProfessions());
         model.addAttribute("places", getAllPlaces());

@@ -80,7 +80,7 @@
                 <th scope="col">Título</th>
                 <th scope="col">Estado</th>
                 <th scope="col">Fecha publicación</th>
-                <th scope="col">Opciones</th>
+                <th scope="col" style="width: 30%">Opciones</th>
             </tr>
             </thead>
             <tbody class="table-group-divider">
@@ -91,13 +91,13 @@
                         <span class="badge text-bg-danger ms-2" th:if="${job.isSoftDeleted()}">Eliminado</span>
                     </a>
                 </th>
-                <!-- Badge if deleted, same in consult job -->
                 <td th:text="${job.getState().getState()}"></td>
                 <td th:text="${job.getPubDateAsString()}"></td>
                 <td>
                     <a class="btn btn-info me-2" th:href="@{/job/{jid}/application(jid=${job.getId()})}">
                         Ver postulaciones
                     </a>
+                    <a class="btn btn-warning me-2" th:href="@{/job/{id}/update(id=${job.getId()})}">Actualizar</a>
                     <form th:action="@{/job(id=${job.getId()})}" th:method="delete" class="d-inline">
                         <button type="submit" class="btn btn-danger"
                                 th:disabled="${job.isSoftDeleted()}">Eliminar</button>
