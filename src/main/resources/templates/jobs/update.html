@@ -13,10 +13,10 @@
         <a class="btn text-info" onclick="history.back();"><i class="bi bi-arrow-left-square"></i> Volver</a>
         <div class="card text-bg-light col-md-10 my-2 offset-md-1 px-5">
             <div class="card-body">
-                <form method="POST"
-                      th:action="@{/job}"
+                <form th:method="PUT"
+                      th:action="@{/job/{id}(id=${jobId})}"
                       th:object="${jobDTO}" class="my-form">
-                    <h2 class="text-center my-3">Crear empleo</h2>
+                    <h2 class="text-center my-3">Actualizar empleo</h2>
                     <div class="text-center">
                         <div class="col-md-8 offset-md-2 mb-2">
                             <div class="form-floating" th:classappend="${#fields.hasErrors('title')} ? 'is-invalid':''">
@@ -25,9 +25,9 @@
                             </div>
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
                         </div>
-                        <div class="col-md-8 offset-md-2">
+                        <div class="col-md-12">
                             <div class="form-floating" th:classappend="${#fields.hasErrors('description')} ? 'is-invalid':''">
-                                <textarea th:field="*{description}" id="description" class="form-control h-auto" placeholder="Descripción (*)" th:classappend="${#fields.hasErrors('description')} ? 'is-invalid':''" rows="4"></textarea>
+                                <textarea th:field="*{description}" id="description" class="form-control h-auto" placeholder="Descripción (*)" th:classappend="${#fields.hasErrors('description')} ? 'is-invalid':''" rows="10"></textarea>
                                 <label for="description">Description (*)</label>
                             </div>
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>

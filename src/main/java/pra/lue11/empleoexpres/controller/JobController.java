@@ -4,7 +4,6 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import jakarta.websocket.server.PathParam;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,6 +33,7 @@ public class JobController {
     private final String MY_JOBS_PAGE = "jobs/my-jobs";
 
     private final String CREATE_JOB_TEMPLATE = "jobs/create.html";
+    private final String UPDATE_JOB_TEMPLATE = "jobs/update.html";
 
     private UserService userService;
     private JobService jobService;
@@ -112,7 +112,7 @@ public class JobController {
     public String showCreateJobPage(Authentication authentication, Model model){
         User self = getUserFromAuth(authentication);
         model.addAttribute("user", self);
-        model.addAttribute("jobDTO", new JobCreationDTO());
+        model.addAttribute("jobDTO", new JobDTO());
         model.addAttribute("studies", getAllProfessions());
         model.addAttribute("places", getAllPlaces());
         return CREATE_JOB_TEMPLATE;
@@ -120,18 +120,53 @@ public class JobController {
 
     @PreAuthorize("hasAuthority('PUBLISHER')")
     @PostMapping("/job")
-    public String insertJob(@ModelAttribute(name = "jobDTO") @Valid JobCreationDTO jobCreationDTO,
+    public String insertJob(@ModelAttribute(name = "jobDTO") @Valid JobDTO jobDTO,
                             BindingResult result, Model model, Authentication authentication, RedirectAttributes redirectAttributes){
         User self = getUserFromAuth(authentication);
         if(result.hasErrors()){
             model.addAttribute("user", self);
-            model.addAttribute("jobDTO", jobCreationDTO);
+            model.addAttribute("jobDTO", jobDTO);
             model.addAttribute("studies", getAllProfessions());
             model.addAttribute("places", getAllPlaces());
             return CREATE_JOB_TEMPLATE;
         }else {
-            jobService.insertJob(jobCreationDTO, self.getPublisher());
+            jobService.insertJob(jobDTO, self.getPublisher());
             redirectAttributes.addFlashAttribute("successMessage", "Empleo insertado exitosamente");
+            return "redirect:/my-jobs";
+        }
+    }
+
+    @PreAuthorize("hasAuthority('PUBLISHER')")
+    @GetMapping("/job/{id}/update")
+    public String showUpdateJobPage(@PathVariable(value = "id") Integer id,
+                                    Authentication authentication, Model model){
+        User self = getUserFromAuth(authentication);
+        Job job = jobService.getJobById(id);
+        if(!self.getPublisher().equals(job.getPublisher()))
+            return "redirect:/my-jobs";
+        model.addAttribute("user", self);
+        model.addAttribute("jobId", id);
+        model.addAttribute("jobDTO", job.getAsDto());
+        model.addAttribute("studies", getAllProfessions());
+        model.addAttribute("places", getAllPlaces());
+        return UPDATE_JOB_TEMPLATE;
+    }
+
+    @PreAuthorize("hasAuthority('PUBLISHER')")
+    @PutMapping("/job/{id}")
+    public String updateJob(@ModelAttribute(name = "jobDTO") @Valid JobDTO jobDTO,
+                            @PathVariable(value = "id") Integer id,
+                            BindingResult result, Model model, Authentication authentication, RedirectAttributes redirectAttributes){
+        User self = getUserFromAuth(authentication);
+        if(result.hasErrors()){
+            model.addAttribute("user", self);
+            model.addAttribute("jobDTO", jobDTO);
+            model.addAttribute("studies", getAllProfessions());
+            model.addAttribute("places", getAllPlaces());
+            return UPDATE_JOB_TEMPLATE;
+        }else {
+            jobService.updateJob(id, jobDTO, self.getPublisher());
+            redirectAttributes.addFlashAttribute("successMessage", "Empleo actualizado exitosamente");
             return "redirect:/my-jobs";
         }
     }

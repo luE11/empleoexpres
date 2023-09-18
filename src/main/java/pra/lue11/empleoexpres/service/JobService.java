@@ -8,11 +8,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import pra.lue11.empleoexpres.dto.CandidateInsertApplicationDTO;
-import pra.lue11.empleoexpres.dto.JobCreationDTO;
+import pra.lue11.empleoexpres.dto.JobDTO;
 import pra.lue11.empleoexpres.dto.JobHistoryDTO;
 import pra.lue11.empleoexpres.dto.PublisherUpdateApplicationDTO;
 import pra.lue11.empleoexpres.model.*;
 import pra.lue11.empleoexpres.model.enums.JobApplicationState;
+import pra.lue11.empleoexpres.model.enums.JobModality;
 import pra.lue11.empleoexpres.model.enums.JobState;
 import pra.lue11.empleoexpres.model.inmutable.ApplicationView;
 import pra.lue11.empleoexpres.model.inmutable.CandidateAppliedJobView;
@@ -134,14 +135,25 @@ public class JobService {
         }
     }
 
-    public void insertJob(JobCreationDTO jobCreationDTO, Publisher publisher){
-        Place place = placeService.getPlaceById(jobCreationDTO.getPlaceId());
-        Study profession = studyService.getStudyById(jobCreationDTO.getProfessionId());
-        Job newJob = jobCreationDTO.toJob();
+    public void insertJob(JobDTO jobDTO, Publisher publisher){
+        Place place = placeService.getPlaceById(jobDTO.getPlaceId());
+        Study profession = studyService.getStudyById(jobDTO.getProfessionId());
+        Job newJob = jobDTO.toJob();
         newJob.setPublisher(publisher);
         newJob.setLocation(place);
         newJob.setProfession(profession);
         jobRepository.save(newJob);
+    }
+
+    public void updateJob(int jobId, JobDTO jobDTO, Publisher publisher){
+        Job job = getJobById(jobId);
+        Place place = placeService.getPlaceById(jobDTO.getPlaceId());
+        Study profession = studyService.getStudyById(jobDTO.getProfessionId());
+        job.updateFromDto(jobDTO);
+        job.setPublisher(publisher);
+        job.setLocation(place);
+        job.setProfession(profession);
+        jobRepository.save(job);
     }
 
     public boolean isJobAppliedByCandidate(int candidateId, int jobId){
