@@ -32,7 +32,8 @@ INSERT INTO users(email, password, role) VALUES
     ('p2@gmail.com', '$2a$10$U/zS6r/bc1MIS5UndON5C.CAVtDePKbyoU/nyrYXIc3PnpuJUo6bu', 'PUBLISHER'),
     ('p3@gmail.com', '$2a$10$U/zS6r/bc1MIS5UndON5C.CAVtDePKbyoU/nyrYXIc3PnpuJUo6bu', 'PUBLISHER'),
     ('p4@gmail.com', '$2a$10$U/zS6r/bc1MIS5UndON5C.CAVtDePKbyoU/nyrYXIc3PnpuJUo6bu', 'PUBLISHER'),
-    ('p5@gmail.com', '$2a$10$U/zS6r/bc1MIS5UndON5C.CAVtDePKbyoU/nyrYXIc3PnpuJUo6bu', 'PUBLISHER');
+    ('p5@gmail.com', '$2a$10$U/zS6r/bc1MIS5UndON5C.CAVtDePKbyoU/nyrYXIc3PnpuJUo6bu', 'PUBLISHER'),
+    ('c2@gmail.com', '$2a$10$U/zS6r/bc1MIS5UndON5C.CAVtDePKbyoU/nyrYXIc3PnpuJUo6bu', 'CANDIDATE');
     -- ('a@gmail.com', '$2a$10$bpIjwdoLaiJnTS3GkO0bfODdklwUd/nzAnI6oclhJzd3AFRJrK5W6', 'ADMIN');
 
 INSERT INTO publishers(company_name, description, logo_url, visible, created_at, user_id) VALUES
@@ -51,7 +52,10 @@ INSERT INTO persons(first_name, last_name, birth_date, phone_number, description
     preferred_modality, photo_url, address, cv1url, position, created_at, user_id, place_id) VALUES
     ('Jhon Jefferson', 'Doe Smith', '1999-11-21', '123456789', 'Pellentesque porta placerat tortor venenatis consectetur. Nam suscipit mauris in aliquet tempor. Pellentesque sit amet molestie elit. In tempus, eros at auctor convallis, magna risus tristique massa, porta elementum risus neque sed velit. Praesent semper elit eget nisl hendrerit, sed viverra justo sodales. Vestibulum sollicitudin arcu id tempus rhoncus. Ut porta sollicitudin quam, nec aliquet risus elementum a. Nulla facilisi. Donec quis lacinia mi, accumsan laoreet turpis. Cras at lacinia urn.',
     'REMOTE', 'files-upload/profile_l@gmail.com.png', 'Calle 7b # 9-62', 'files-upload/cv1_l@gmail.com.pdf', 'Desarrollador Java Junior',
-    now(), 2, 17);
+    now(), 2, 17),
+    ('Jhon Jefferson2', 'Doe Smith2', '1999-11-21', '123456789', 'Pellentesque porta placerat tortor venenatis consectetur. Nam suscipit mauris in aliquet tempor. Pellentesque sit amet molestie elit. In tempus, eros at auctor convallis, magna risus tristique massa, porta elementum risus neque sed velit. Praesent semper elit eget nisl hendrerit, sed viverra justo sodales. Vestibulum sollicitudin arcu id tempus rhoncus. Ut porta sollicitudin quam, nec aliquet risus elementum a. Nulla facilisi. Donec quis lacinia mi, accumsan laoreet turpis. Cras at lacinia urn.',
+        'REMOTE', 'files-upload/profile_l@gmail.com.png', 'Calle 7b # 9-62', 'files-upload/cv1_l@gmail.com.pdf', 'Desarrollador Java Senior',
+        now(), 7, 16);
 
 INSERT INTO job_histories(description, position, init_date, end_date, person_id) VALUES
     ('Pellentesque porta placerat tortor venenatis consectetur. Nam suscipit mauris in aliquet tempor.',
@@ -93,6 +97,8 @@ INSERT INTO `jobs` (`description`, `job_mode`, `pub_date`, `salary`, `state`, `t
 ('Distinctio quia molestias est tenetur ex dicta. Et dolor aut sunt molestias et. Est nisi quo quae.','FACETOFACE','2023-08-17 11:13:01.000000',3900082,'ACTIVE','Soluta velit cupiditate beatae laborum eveniet quas.',0, 36, 3, 3),
 ('Qui cupiditate voluptate beatae molestiae voluptatem ipsa. Unde qui impedit pariatur ratione ex officia minima aut. Est quo consectetur amet repellat.','HYBRID','2023-08-17 11:13:01.000000',8728000,'ACTIVE','Et nihil reiciendis et fugit sed.',0, 35, 3, 3);
 
-INSERT INTO jobs_has_candidates (job_id, person_id, candidate_comment, company_observations, state, cv_url, updated_at)
-    VALUES ('1', '1', 'Buenas, estoy interesado en el puesto, creo que soy un candidato ideal y bla bla bla lorem ipsum dolorem. También puede copiar y pegar bloques de texto de un documento que tengas ya escrito.',
-    NULL, 'APPLIED', 'files-upload/cv1_l@gmail.com.pdf', '2023-08-31 10:50:00.000000');
+INSERT INTO jobs_has_candidates (job_id, person_id, candidate_comment, company_observations, state, cv_url, updated_at) VALUES
+    ('1', '1', 'Buenas, estoy interesado en el puesto, creo que soy un candidato ideal y bla bla bla lorem ipsum dolorem. También puede copiar y pegar bloques de texto de un documento que tengas ya escrito.',
+    NULL, 'APPLIED', 'files-upload/cv1_l@gmail.com.pdf', '2023-08-31 10:50:00.000000'),
+    ('1', '2', 'Buenas, estoy interesado en el puesto, creo que soy un candidato ideal y bla bla bla lorem ipsum dolorem. También puede copiar y pegar bloques de texto de un documento que tengas ya escrito.',
+    'Asd xdxd', 'APPLIED', 'files-upload/cv1_l@gmail.com.pdf', '2023-08-31 10:50:00.000000');

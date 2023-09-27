@@ -78,7 +78,7 @@ public class JobController {
     public String consultJobOffer(@PathVariable(value = "id") Integer id,
                                   Authentication authentication, Model model){
         User self = getUserFromAuth(authentication);
-        Job consultedJob = jobService.getById(id);
+        Job consultedJob = jobService.getJobById(id);
         model.addAttribute("user", self);
         model.addAttribute("job", consultedJob);
         if(self.isCandidate())

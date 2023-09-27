@@ -36,7 +36,7 @@ public class JobApplicationController {
     public String getCandidateApplicationPage(@PathVariable(name = "jid") Integer jobId,
                                               Model model, Authentication authentication){
         User self = getUserFromAuth(authentication);
-        Job job = jobService.getById(jobId);
+        Job job = jobService.getJobById(jobId);
         model.addAttribute("user", self);
         model.addAttribute("job", job);
         if(jobService.isJobAppliedByCandidate(self.getPerson().getId(), jobId))
@@ -56,7 +56,7 @@ public class JobApplicationController {
             return "redirect:/job/apply/"+jobId;
         }else {
             User self = getUserFromAuth(authentication);
-            Job job = jobService.getById(jobId);
+            Job job = jobService.getJobById(jobId);
             model.addAttribute("user", self);
             model.addAttribute("job", job);
             if(jobService.isJobAppliedByCandidate(self.getPerson().getId(), jobId))
@@ -72,7 +72,7 @@ public class JobApplicationController {
                                       @PathVariable(name = "jid") Integer jobId,
                                       Model model, Authentication authentication){
         User self = getUserFromAuth(authentication);
-        Job job = jobService.getById(jobId);
+        Job job = jobService.getJobById(jobId);
         if(!self.equals(job.getPublisher().getUser()))
             return "redirect:/search";
         model.addAttribute("user", self);
@@ -87,7 +87,7 @@ public class JobApplicationController {
                                             @PathVariable(name = "cid") Integer candidateId,
                                             Model model, Authentication authentication){
         User self = getUserFromAuth(authentication);
-        Job job = jobService.getById(jobId);
+        Job job = jobService.getJobById(jobId);
         if(!self.equals(job.getPublisher().getUser()))
             return "redirect:/search";
         model.addAttribute("user", self);
@@ -104,7 +104,7 @@ public class JobApplicationController {
                                               @ModelAttribute(name = "filter") @Valid PublisherUpdateApplicationDTO applicationDTO,
                                               Model model, Authentication authentication){
         User self = getUserFromAuth(authentication);
-        Job job = jobService.getById(jobId);
+        Job job = jobService.getJobById(jobId);
         if(!self.equals(job.getPublisher().getUser()))
             return "redirect:/search";
         jobService.updatePublisherApplication(jobId, candidateId, applicationDTO);
