@@ -13,7 +13,6 @@ import pra.lue11.empleoexpres.dto.JobHistoryDTO;
 import pra.lue11.empleoexpres.dto.PublisherUpdateApplicationDTO;
 import pra.lue11.empleoexpres.model.*;
 import pra.lue11.empleoexpres.model.enums.JobApplicationState;
-import pra.lue11.empleoexpres.model.enums.JobModality;
 import pra.lue11.empleoexpres.model.enums.JobState;
 import pra.lue11.empleoexpres.model.inmutable.ApplicationView;
 import pra.lue11.empleoexpres.model.inmutable.CandidateAppliedJobView;
@@ -70,7 +69,7 @@ public class JobService {
                         .withSort(Sort.by(JOB_PUB_DATE_NAME).descending()));
     }
 
-    public Job getById(int id){
+    public Job getJobById(int id){
         return jobRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Job with id " + id + " was not found"));
     }
@@ -158,11 +157,6 @@ public class JobService {
 
     public boolean isJobAppliedByCandidate(int candidateId, int jobId){
         return jobHasCandidateRepository.existsById(new JobCandidateId(candidateId, jobId));
-    }
-
-    public Job getJobById(int id){
-        return jobRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Job with id " +id+" was not found"));
     }
 
     public Person getPersonById(int id){
