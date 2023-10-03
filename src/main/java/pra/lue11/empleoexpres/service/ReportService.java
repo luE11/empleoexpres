@@ -2,16 +2,16 @@ package pra.lue11.empleoexpres.service;
 
 import lombok.AllArgsConstructor;
 import net.sf.jasperreports.engine.JRException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pra.lue11.empleoexpres.model.Job;
-import pra.lue11.empleoexpres.model.JobHasCandidate;
 import pra.lue11.empleoexpres.utils.JasperReportUtil;
-
-import java.io.FileNotFoundException;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.Objects;
 
 /**
  * @author luE11 on 19/09/23
@@ -20,8 +20,9 @@ import java.util.Set;
 @Service
 public class ReportService {
     private final String JOB_CANDIDATES_REPORT = "job_candidates_report";
+    private final String ALL_PUBLISHERS_REPORT = "publisher_list_report";
 
-    private JobService jobService;
+    private PublisherService publisherService;
 
     public byte[] generateJobReport(Job job, String baseUrl) throws JRException {
         Map<String, Object> params = new HashMap<>();
@@ -30,13 +31,14 @@ public class ReportService {
         params.put("job", job);
         params.put("candidates", job.getCandidates());
         params.put("baseUrl", baseUrl);
-        /* .getCvUrl()
-            .getState().getState()
-            .getUpdatedAt()
-            .getPerson().getFullName()
-            .getPerson().getUser().getId() link a perfil?
-         */
         return JasperReportUtil.generateReport(JOB_CANDIDATES_REPORT, params);
+    }
+
+    public byte[] generateAllPublishersReport(String baseUrl) throws SQLException, JRException {
+        Map<String, Object> params = new HashMap<>();
+        params.put("baseUrl", baseUrl);
+        params.put("publishers", publisherService.getAllPublishers());
+        return JasperReportUtil.generateReport(ALL_PUBLISHERS_REPORT, params);
     }
 
 }

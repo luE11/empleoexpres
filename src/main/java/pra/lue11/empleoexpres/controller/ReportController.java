@@ -21,6 +21,7 @@ import pra.lue11.empleoexpres.service.ReportService;
 import pra.lue11.empleoexpres.service.UserService;
 
 import java.io.FileNotFoundException;
+import java.sql.SQLException;
 
 /**
  * @author luE11 on 19/09/23
@@ -36,7 +37,7 @@ public class ReportController {
     @PreAuthorize("hasAuthority('PUBLISHER')")
     @GetMapping("/reports/job/{id}")
     public ResponseEntity<byte[]> getJobCandidatesReport(@PathVariable("id") Integer jobId,
-                                                         Authentication authentication, Model model){
+                                                         Authentication authentication){
         User self = getUserFromAuth(authentication);
         Job job = jobService.getJobById(jobId);
         if(!self.getPublisher().equals(job.getPublisher()))
@@ -50,6 +51,22 @@ public class ReportController {
             headers.setContentDispositionFormData("filename", "job_candidates_report.pdf");
             return new ResponseEntity<byte[]>(report, headers, HttpStatus.OK);
         } catch (JRException e) {
+            System.err.println(e.getMessage());
+            return new ResponseEntity<byte[]>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/reports/publishers")
+    public ResponseEntity<byte[]> getAllPublishersReport(){
+        try {
+            String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+            byte[] report = reportService.generateAllPublishersReport(baseUrl);
+            HttpHeaders headers = new HttpHeaders();
+            //set the PDF format
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("filename", "all_publishers_report.pdf");
+            return new ResponseEntity<byte[]>(report, headers, HttpStatus.OK);
+        } catch (JRException | SQLException e) {
             System.err.println(e.getMessage());
             return new ResponseEntity<byte[]>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
