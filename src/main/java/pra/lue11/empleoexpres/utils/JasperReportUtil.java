@@ -1,8 +1,6 @@
 package pra.lue11.empleoexpres.utils;
 
 import net.sf.jasperreports.engine.*;
-import org.springframework.util.ResourceUtils;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -21,9 +19,8 @@ public class JasperReportUtil {
                                 JasperCompileManager.compileReport(
                                         in
                                         // dynamic parameters
-                                ), params, new JREmptyDataSource());
+                                ), params,
+                                new JREmptyDataSource());
         return JasperExportManager.exportReportToPdf(empReport);
     }
-
-
 }
